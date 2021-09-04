@@ -1,0 +1,241 @@
+---
+title: "Getting started with _landscapeDecoupler_"
+output:
+  prettydoc::html_pretty:
+    theme: hpstr
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{getting_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# What is in this vignette?
+
+The landscapeDecoupler is an R package to assess multiscale landscape decoupling.
+
+**Here you will find:**
+
+1. **Introduction**
+    - *A little about the concept*
+2. **How to use it**
+    - *Sequential decoupling*
+    - *Specific decoupling*
+3. Compatibility with other packages
+
+
+## Introduction
+
+Nested multiscale approaches constitute one of the main tools on the understanding ecological processes and detecting the scale of effect. Nonetheless, nested approaches retain the effect and noise of the landscape attributes from the adjacent smaller scale. Therefore, analyzing decoupled scales might reveal detailed ecological responses to landscape context. The idea of decoupled multiscale approaches still poorly explored and the lack of tools specifically designed to deal with is always helpful.
+
+### A little about the concept
+
+The image bellow summarize the main ideas about _coupled/decoupled_ multiscale approaches. You may noticed that the "traditional" nested landscape approach always have the other scales inside it. So, one may be interested in see how composition and structure of each portion of the landscape can contribute to any variable responses. Therefore, users can either use a sequential decoupling landscape strategy (Figure 1, B) or cut out an specific scale and compare against the total (Figure 1, C and D).
+
+![Figure 1. A summary of multiscale strategies](multscale_summary.png)
+
+The idea of the LandscapeDecoupler is to recursively extract and analyze decoupled buffered scales from a given landscape, returning raster objects, files and basic metrics of the landscape components, so users can easily use rasters and metrics in further analysis.
+
+The package only needs three inputs: 
+ 1. a classified landscape (a raster)
+ 2. lat-long coordinates (a txt or shape [.shp] file); 
+ 3. two or more buffer sizes to be decoupled (input as vector).
+ 
+The package also includes some conveniencies to plot and export the results.
+
+The lines bellow show an example of how to use it.
+
+## How to use it: _"two strategies"_
+
+As mentioned before, the package was designed to manage two decoupling strategies:
+
+One is a "sequential decoupling" strategy, wherein the landscape is sliced using a set of buffers in a progressive way. Therefore, if users input a set of buffers like 250 m, 500 m, and 1000 m, the output will be three raster objects for each given site at the given landscape.
+
+The package also include an second option, which implicates in an "asymmetric decoupling", wherein users might decouple out a specific scale from the landscape. Let's say one would like to compare the composition at a scale between 250 m and 500 m against the everything else from 0 to 3000 m. Then, the user can crop out that specific scale from the whole landscape. The respective raster objects and metrics are so returned separately.
+
+Now lets cover an example:
+
+### Sequential decoupling
+
+We first **load the package**:
+
+```{r, echo=F}
+library(landscapeDecoupler)
+```
+
+**Then the landscape:**
+You should have a file already classified, if so, you just need to raster() a path...
+Herein we will load an example from MapBiomas 5.0 colections.
+
+```{r, warning=FALSE}
+#1 - loading some raster
+file <- system.file("extdata/raster.grd", package="landscapeDecoupler")
+r <- raster(file)
+#1.1 - making categories
+r <- as.factor(r)
+```
+
+**Grabbing some meaningfull colors**      
+The package provide several colour pallets from the grDevices, but we will load an specific index that used by the MapBiomas project.
+
+```{r, warning=FALSE}
+#2 - loading the color index file
+colors <- read.table(system.file("extdata/colors.txt", package="landscapeDecoupler"), header = T, sep = "\t")
+#2.1 - creating some breaks to match categories and colors
+breaks <- c(0, as.numeric(levels(as.factor(values(r)))))
+#2.2 - matching index values and breaks
+colors <- colors[colors$value %in% breaks,]
+#2.3 - ordering by values
+colors <- colors[order(colors$value),]
+# A simple plot to see the landscape and categories meaning.
+par(mar=c(3,2,3,11))
+plot(r, breaks=breaks, col= colors$hex, legend=F, 
+     xpd=T, main="An eight classes raster")
+legend(x=268700, y=7600000, 
+       legend = paste0(colors$value, ": ", colors$name),
+       title = "Values / Categories:", title.adj = 0.05,
+       fill = colors$hex, bty = "n", xpd = T)
+```
+**Now to the points**     
+
+Users can read latitude and longitude files through the `sf` package functions. Users are encouraged to provide an "id" field in shape files in order to keep custom site names. Otherwise, sites will be sequentially named.
+
+```{r}
+#2 - reading points
+points.file <- system.file("extdata/points.txt", package="landscapeDecoupler")
+p <- read_points(points.file,type="txt",id="id",lat="x",long="y", delimiter="\t")
+plot(r)
+points(p, pch=19, col="black")
+```
+
+> In any analysis of spatial data it's a good practice to keep coordinate systems consistent. Shape files usually already have a crs assigned, but users might be shure using the code bellow.
+
+```{r}
+crs(p)<-crs(r)
+```
+
+**And buffers:**
+
+Users must provide a set of buffers (> 2) to be crop out the landscape. It must be passed in sequential and increasing order, as in the example bellow.
+
+```{r}
+#Setting the buffer sizes
+b <- c(250, 500, 1000, 1500)
+```
+
+> Users can provide any set of buffers, but one must keep in mind that buffers are calculated as the second less the first, the third less the second, and so on. Hence, the first buffer (250) will be a circle with 250 m radius from the sites we provided; but the second buffer (500) will be a circle with 500 m radius from the provided site less the first buffer (250); Likewise, the third buffer, 1000 m less the 500 m, and so on through the list.
+
+Now we can run the main function of the package, asking for decoupling a landscape `r` at a site `p` with a set of buffers `b`.
+
+> It might take a couple seconds or minuts depending on the resolution of the raster, the number of sites and buffers.
+
+```{r, echo=T, warning=FALSE, results='hide'}
+multiscales <- decouple(r, p, b)
+```
+
+The user can now take a look at the object returned. It will be a list of rasters. The first level correspond to each site and the seccond level to each buffer.
+
+You might see that the raster names follow the format _"id_bufferSize"_. So the first buffer in our example will be the **s1_250**, then **s1_500**, and so on...
+
+```{r, include=F}
+head(multiscales, 1)
+#for Rstudio users
+#View(multiscales)
+
+```
+
+As any list, users might access especific elements with a very simple syntax. Let's say one would like to access the raster object from the buffer of 500 m at the site p01. The user will only have to use a command like this:
+
+```{r, include=FALSE}
+multiscales[[1]][[2]]
+```
+
+> Note that the buffers follow the order as inputed in the parameters. In this example the multiscales[[1]][[1]] represent the buffer of 250 m at the site p01; multiscales[[1]][[2]] the one of 500 m; multiscales[[1]][[3]] = 1000 m and multiscales[[1]][[4]] = 1500. The same might be applicable for any other site just using multiscales[[2]][[1]], so on...
+
+Users might extract very basic information of the rasters with the function `extract_metrics` just like bellow:
+
+```{r}
+metrics <- extract_metrics(multiscales, countNA = "no")
+metrics[[1]]
+```
+
+Just like the output from `decouple`, the output from `extract_metrics` is a list of data.frames with very basic stats, like the countting of a specific class, its percentage, total number of classes in a given scale and compositional heterogeneity.
+
+Finally one might plot it. The package has a wrapper for the native `plot` function which will allow users directlly plot some sets of scales
+
+```{r}
+#to plot everything
+#plot_decoupled(multiscales)
+#to plot just landscape from the site 2
+par(mar = c(6,2,2,1))
+plot_decoupled(multiscales[[2]], cols = 4, rows=1, legend = F,
+               colors = colors$hex, breaks=breaks)
+legend(x=245000,y=7585500, legend = breaks, fill = colors$hex, xpd = NA, bty="n", ncol = 9, cex=1.3)
+```
+
+At last, users might want to save the decoupled scales at local files to access in other softwares or packages.
+
+```{r, include=T, eval=FALSE, warning=FALSE}
+write.scales(x = multiscales, buffer.names = b, format = 'GTiff')
+```
+
+### Specific decoupling
+
+Users might want to decouple specific scales, for instance, decouple a scale between 250 and 500 m out of a landscape with 1500 m radius total. In the LandscapeDecouple package it is simply done as bellow:
+
+```{r, echo = FALSE, warning=FALSE, message=FALSE, results='hide'}
+b<-c(250, 500, 1500)
+specific.scales <- decouple(r, p, b, dec.specific = c(2))
+```
+
+for visual inspection, the user can plot the resulted scales at the site 01:
+
+```{r}
+plot_decoupled(specific.scales[[1]], cols = 2, rows = 1, colors = colors$hex, breaks = breaks)
+```
+
+Now it is easy to see that users are fully able to compare specificities about one scale related to the whole left. You may also notice that the name of the "nonspecific" scale is a concatenation of the two buffers other buffers we used to configure our landscape.
+
+If we extract the metrics from these two raster it will seems like this:
+
+```{r}
+specific.scales.metrics <- extract_metrics(specific.scales)
+
+specific.scales.metrics[[1]]
+
+```
+
+Here above we can see two data frames, one with the data from the 500m buffer and another with everything else for the first sampling site.
+
+## Compatibility with other packages
+
+Once the user has defined the desired level of comparison and extract his landscape, one might want to proceed with more complex analysis. Other packages as `LandscapeMetrics` might be used to calculate landscape properties.
+
+The output from the `LandscapeDecoupled` can be directilly inputed into functions as `calculate_lsm`, since the output is a raster object. Users might do this as follows:
+
+```{r, warning=FALSE}
+library("landscapemetrics")
+area <- calculate_lsm(specific.scales[[1]], level = "class", metric = "area")
+#Just to show you who are layers 1 and 2 for the landscapeMetrics
+paste0("layer", c(1:2),": ", lapply(specific.scales[[1]],names))
+area[area$metric=="area_mn",  ]
+
+#You can also do like this:
+#landscapes <- stack(specific.scales[[1]])
+#area<-calculate_lsm(landscape, level = "class", metric = "area")
+#area
+```
+
+As you can see, `landscapeMetrics` understand the list of two raster objects we gave to it as layers. Therefore, the first layer represents the s1_500 and the layer two is the s1_250_s1_1500.
+
+Hope you find it helpful.
+
+Have fun!
+
+If you end up on any crash or may have a bad time trying to run this code, please fell free to mail me.
+
+Dr. Wilson Frantine-Silva     
+<wilsonfrantine@gmail.com>      
+Universidade Estadual do Norte Fluminense, Campos dos Goytacazes, RJ - BR      
+LCA, PPGERN, EcoExperimental.     
+Laboratório de Ecologia e Polinização de Abelhas.     
