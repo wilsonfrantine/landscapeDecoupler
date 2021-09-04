@@ -2,7 +2,7 @@
 title: "Getting started with _landscapeDecoupler_"
 output:
   prettydoc::html_pretty:
-    theme: hpstr
+    theme: tactile
     highlight: github
 vignette: >
   %\VignetteIndexEntry{getting_started}
@@ -10,9 +10,7 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-# What is in this vignette?
-
-The landscapeDecoupler is an R package to assess multiscale landscape decoupling.
+## What is in this vignette?
 
 **Here you will find:**
 
@@ -21,16 +19,16 @@ The landscapeDecoupler is an R package to assess multiscale landscape decoupling
 2. **How to use it**
     - *Sequential decoupling*
     - *Specific decoupling*
-3. Compatibility with other packages
+3. **Compatibility with other packages**
 
 
 ## Introduction
 
-Nested multiscale approaches constitute one of the main tools on the understanding ecological processes and detecting the scale of effect. Nonetheless, nested approaches retain the effect and noise of the landscape attributes from the adjacent smaller scale. Therefore, analyzing decoupled scales might reveal detailed ecological responses to landscape context. The idea of decoupled multiscale approaches still poorly explored and the lack of tools specifically designed to deal with is always helpful.
+Nested multiscale approaches constitute one of the main tools on the understanding ecological processes and detecting the scale of effect. However, nested approaches inherently retain both the effect and noise of the landscape attributes from the smaller scales as walking toward the larger ones. Therefore, analyzing decoupled scales might reveal detailed ecological responses to landscape context. The idea of decoupled multiscale approaches still poorly explored and the lack of tools specifically designed to deal with is one of the reasons. We designed the _landscapeDecoupler_ to help researchers to achive this as easy as possible.
 
 ### A little about the concept
 
-The image bellow summarize the main ideas about _coupled/decoupled_ multiscale approaches. You may noticed that the "traditional" nested landscape approach always have the other scales inside it. So, one may be interested in see how composition and structure of each portion of the landscape can contribute to any variable responses. Therefore, users can either use a sequential decoupling landscape strategy (Figure 1, B) or cut out an specific scale and compare against the total (Figure 1, C and D).
+The image bellow summarizes the main ideas about _coupled/decoupled_ multiscale approaches. You may noticed that the "traditional" nested landscape approach always have the other scales inside it. So, one may be interested in see how composition and structure of each portion of the landscape can contribute to any variable responses. Therefore, users can either use a sequential decoupling landscape strategy (Figure 1, B) or cut out an specific scale and compare against the total (Figure 1, C and D).
 
 ![Figure 1. A summary of multiscale strategies](multscale_summary.png)
 
@@ -96,6 +94,7 @@ legend(x=268700, y=7600000,
        title = "Values / Categories:", title.adj = 0.05,
        fill = colors$hex, bty = "n", xpd = T)
 ```
+
 **Now to the points**     
 
 Users can read latitude and longitude files through the `sf` package functions. Users are encouraged to provide an "id" field in shape files in order to keep custom site names. Otherwise, sites will be sequentially named.
@@ -170,7 +169,7 @@ Finally one might plot it. The package has a wrapper for the native `plot` funct
 par(mar = c(6,2,2,1))
 plot_decoupled(multiscales[[2]], cols = 4, rows=1, legend = F,
                colors = colors$hex, breaks=breaks)
-legend(x=245000,y=7585500, legend = breaks, fill = colors$hex, xpd = NA, bty="n", ncol = 9, cex=1.3)
+legend(x=245000,y=7585100, legend = breaks, fill = colors$hex, xpd = NA, bty="n", ncol = 9, cex=1.3)
 ```
 
 At last, users might want to save the decoupled scales at local files to access in other softwares or packages.
