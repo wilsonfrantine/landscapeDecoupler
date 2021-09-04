@@ -238,6 +238,19 @@ Here you go with basics. Decoupled multiscale approach has a huge potential to l
 
 I hope you find it helpful and useful, but if you end up on any crash or may have a bad time trying to run this code, please fell free to mail me.
 
+## References
+
+Some published papers about the methodology and how to use it:
+
+**The Interplay Between Thematic Resolution, Forest Cover, and Heterogeneity for Explaining Euglossini Bees Community in an Agricultural Landscape**     
+_Lázaro da Silva Carneiro, Willian Moura de Aguiar, Camila de Fátima Priante, Milton Cezar Ribeiro, Wilson Frantine-Silva and Maria Cristina Gaglianone_      
+[https://www.frontiersin.org/articles/10.3389/fevo.2021.628319/full](https://www.frontiersin.org/articles/10.3389/fevo.2021.628319/full)
+
+**Bee responses to landscape composition on coupled and decoupled multiscale approaches**     
+_Lazaro Carneiro, Milton Cezar Ribeiro, Willian Moura de Aguiar, Camila de Fátima Priante, Wilson Frantine-Silva, Maria Cristina Gaglianone_      
+[Preprint](https://www.researchsquare.com/article/rs-750143/v1)
+
+
 Dr. Wilson Frantine-Silva     
 <wilsonfrantine@gmail.com>      
 Universidade Estadual do Norte Fluminense, Campos dos Goytacazes, RJ - BR 
