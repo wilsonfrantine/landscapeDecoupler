@@ -4,7 +4,7 @@ An R package to help with landscape decoupling
 
 ## How to install
 
-If you wanna a simple instalation
+If you wanna a simple installation
 
 ```{r}
 library("devtools")
