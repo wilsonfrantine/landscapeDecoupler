@@ -231,7 +231,7 @@ for visual inspection, the user can plot the resulted scales at the site 01:
 
 ```{r}
 plot_decoupled(specific.scales[[1]], 
-               rows=1, cols=3,
+               rows=1, cols=2,
                colors = colors$hex, 
                breaks = breaks)
 ```
