@@ -203,7 +203,7 @@ plot_decoupled(multiscales[[1]], pallete = "viridis")
 Plotting with different layouts (cols and rows) and custom colors.
 
 ```{r}
-#to plot just landscape from the site 2
+#All plots in a 4x4 grid
 plot_decoupled(multiscales, rows = 4, cols =4, 
                legend = T,
                colors = colors$hex, 
