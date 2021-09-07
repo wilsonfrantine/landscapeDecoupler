@@ -20,5 +20,6 @@ Suggests:
     knitr,
     prettydoc,
     qpdf,
+    tmap,
     landscapemetrics
 VignetteBuilder: knitr

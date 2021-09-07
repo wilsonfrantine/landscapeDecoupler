@@ -6,8 +6,8 @@
 \usage{
 plot_decoupled(
   x,
-  cols = 1,
-  rows = 4,
+  cols = NULL,
+  rows = NULL,
   colors = NULL,
   breaks = NULL,
   pallete = "Terrain",
@@ -25,13 +25,13 @@ plot_decoupled(
 
 \item{colors}{a vector with hexadecilma or R-colors to be used for plot. If NULL the function will calculate a pallet based on the number of classes from the raster(s)}
 
-\item{breaks}{the conventional breaks from the plot function. These breaks match the values in the raster object and the vector of colors gived by users or functions}
+\item{breaks}{the conventional breaks from the plot function. These breaks match the values in the raster object and the vector of colors given by users or functions}
 
 \item{pallete}{a hcl valid pallete (to see options use hcl.pals()). The defualt is "Terrain"}
 
-\item{reverse.pal}{a logical indicating whether to reverse the pallete}
+\item{reverse.pal}{a logical indicating whether to reverse the pallet}
 
-\item{legend}{a logical whether to the pallete}
+\item{legend}{a logical whether to the pallet}
 
 \item{...}{other valid parameter for the plot function}
 }

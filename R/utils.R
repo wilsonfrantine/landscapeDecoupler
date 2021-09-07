@@ -1,6 +1,6 @@
 #Declaring some imports to link to the name space
 
-#' @import methods raster rgeos sf sp
+#' @import methods raster rgeos sf sp graphics
 
 #' @name return_specifics
 #' @noRd
