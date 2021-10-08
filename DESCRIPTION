@@ -1,7 +1,7 @@
 Package: landscapeDecoupler
 Type: Package
 Title: Landscape Decoupler
-Version: 0.2.0
+Version: 0.2.1
 Author: Wilson Frantine-Silva
 Maintainer: Wilson Frantine Silva <wilsonfrantine@gmail.com>
 Description: The package assembling a set of functions to decouple different landscape scales given a classified raster, a set of buffers and sampling sites.
@@ -14,12 +14,12 @@ Depends:
     sf,
     sp,
     methods,
-    rgeos
+    rgeos,
+    landscapemetrics
 Suggests: 
     rmarkdown,
     knitr,
     prettydoc,
     qpdf,
-    tmap,
-    landscapemetrics
+    tmap
 VignetteBuilder: knitr

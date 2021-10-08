@@ -2,6 +2,7 @@
 
 #' @import methods raster rgeos sf sp graphics
 #' @importFrom parallel makeCluster mclapply detectCores stopCluster
+#' @importFrom landscapemetrics calculate_lsm
 
 #' @name return_specifics
 #' @noRd

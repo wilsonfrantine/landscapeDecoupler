@@ -301,7 +301,16 @@ tm_shape(map1) +
 
 Once the user has defined the desired level of comparison and extract his landscape, one might want to proceed with more complex analysis. Other packages as `LandscapeMetrics` might be used to calculate landscape properties.
 
-We can provide the output from the `LandscapeDecoupled` as input into functions as `calculate_lsm`, since the output is a raster object. Users might do this as follows:
+the `landscapeDecoupler` has an wrapper for the main `LandscapeMetrics` function, the `calculate_lsm`. You can call calculations from a desired metric implemented in `landscapeMetrics` as follow:
+
+```{r}
+#creating an object to receive the data frame
+metrics.from.lsm <- calc_lsm(multiscales, level="class", metric=c("ai","ca"))
+#printing the head of the data frame
+head(metrics.from.lsm)
+```
+
+We can provide the output from the `LandscapeDecoupled` as input into functions as `calculate_lsm`, since the output is a raster object. Users might do this as follow:
 
 ```{r, warning=FALSE}
 library("landscapemetrics")
