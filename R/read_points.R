@@ -14,8 +14,8 @@
 #' @param delimiter a character to delimite the columns of the text file with the coordinates
 #' @usage read_points(x,type, delimiter,id, lat, long)
 #' @examples
-#' points.file <- system.file("extdata/points.txt", package="landscapeDecoupler")
-#' p <- read_points(points.file,type="txt",id="id",lat="x",long="y", delimiter="\t")
+#' points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
+#' p <- read_points(points.file,type="shp")
 #' plot(p, pch=19, col="black")
 
 read_points <- function(x, type="txt", delimiter="\t", id="id",
@@ -25,7 +25,7 @@ read_points <- function(x, type="txt", delimiter="\t", id="id",
            shp = sf::read_sf(x),
            txt = read_txt(x, delimiter, id, lat, long)
            )
-  return(points)
+  return(checkpoints(points))
 }
 ############Mini functions to switche
 #' @name read_txt

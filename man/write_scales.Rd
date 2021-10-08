@@ -9,7 +9,9 @@ write_scales(
   buffer.names = NULL,
   format = "GTiff",
   path = NULL,
-  overwrite = T
+  overwrite = T,
+  bylayer = F,
+  ...
 )
 }
 \arguments{
@@ -22,6 +24,10 @@ write_scales(
 \item{path}{a path to save raster. Working directory is the default}
 
 \item{overwrite}{a boolean whether to overwrite files. TRUE by default}
+
+\item{bylayer}{a boolean whether to save files by layers in raster file. See bylayer in raster::writeRaster.}
+
+\item{...}{any other convinient param from raster::writeRaster}
 }
 \description{
 This function saves each uncoupled scale as file

@@ -4,18 +4,18 @@
 \alias{decouple}
 \title{Decouple landscape scales}
 \usage{
-decouple(r = NULL, p = NULL, b = NULL, dec.specific = NULL, progress = TRUE)
+decouple(r, p, b, specific = NULL, parallel = detectCores() - 1)
 }
 \arguments{
 \item{r}{a raster object. Raster must be projected to an UTM system, otherwise, buffer sizes will be given in map units. NULL by default}
 
-\item{p}{a vector of points from where buffers will be calculated}
+\item{p}{a set of Spatial* or simple_features points from where buffers will be calculated}
 
 \item{b}{a vecotr of buffer sizes (radius) to be calculated. If a single value is provided the function returns a simple buffer cut.}
 
-\item{dec.specific}{this parameter controls whether the function will evaluate specific scales sepparetly. If the parameter is seted as c(1,3) and buffers as c(100, 200, 300, 400), the first and third buffers (100, 300) will be decoupled and the second and fourth will be merged in the final list. By default the parameter is setted as null, so all buffers are analyzed as independent unites.}
+\item{specific}{this parameter controls whether the function will return specific scales sepparetly. If the parameter is seted as c(1,3) and buffers as c(100, 200, 300, 400), the first and third buffers (100, 300) will be decoupled and the second and fourth will be merged in the final list. By default the parameter is setted as null, so all buffers are analyzed as independent unites.}
 
-\item{progress}{a logical whether to show progress or not.}
+\item{parallel}{a logical whether to compute with more than a cluster. By default, the function is calculated with all available cores less one.}
 }
 \description{
 The function decouple different scales from a raster file from a set of a buffers calculated from provided points and radius sizes.

@@ -1,11 +1,11 @@
 [general]
 [georeference]
-nrows=946
-ncols=1334
-xmin=232516.092000000004
-ymin=7574897.29800000042
-xmax=269084.550600000017
-ymax=7603534.83700000029
+nrows=1835
+ncols=1709
+xmin=195615.537099999987
+ymin=7677973.09379999992
+xmax=242769.592499999999
+ymax=7733592.27199999988
 projection=+proj=utm +zone=24 +south +datum=WGS84 +units=m +no_defs
 [data]
 datatype=INT1U

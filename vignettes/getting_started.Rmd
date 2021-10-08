@@ -24,7 +24,7 @@ vignette: >
 
 ## Introduction
 
-Nested multiscale approaches constitute one of the main tools on the understanding ecological processes and detecting the scale of effect. However, nested approaches inherently retain both the effect and noise of the landscape attributes from the smaller scales as walking toward the larger ones. Therefore, analyzing decoupled scales might reveal detailed ecological responses to landscape context. The idea of decoupled multiscale approaches still poorly explored and the lack of tools specifically designed to deal with is one of the reasons. We designed the _landscapeDecoupler_ to help researchers to achieve this as easy as possible.
+Nested multiscale approaches constitute one of the main tools on the understanding ecological processes and detecting the scale of effect. However, nested approaches inherently retain both the effect and noise of the landscape attributes from the smaller scales as walking toward the larger ones. Therefore, analyzing decoupled scales might reveal detailed ecological responses to landscape context. The idea of decoupled multiscale approaches still poorly explored and the lack of tools specifically designed to deal with is one of the reasons. We designed the _landscapeDecoupler_ to help researchers to achieve this as simple as possible.
 
 ### A little about the concept
 
@@ -34,7 +34,7 @@ The image bellow summarizes the main ideas about _coupled/decoupled_ multiscale 
 
 The idea of the LandscapeDecoupler is to recursively extract and analyze decoupled buffered scales from a given landscape, returning raster objects, files and basic metrics of the landscape components, so users can easily use rasters and metrics in further analysis.
 
-The package only needs three inputs:     
+The package needs three inputs:     
  1. a classified landscape (a raster)    
  2. lat-long coordinates (a txt or shape [.shp] file);     
  3. two or more buffer sizes to be decoupled (input as vector).    
@@ -115,11 +115,11 @@ In this example we will load an simple txt file, with three columns: id, x and y
 
 ```{r}
 #2 - reading points
-points.file <- system.file("extdata/points.txt", package="landscapeDecoupler")
-p <- read_points(points.file,type="txt",id="id",lat="x",long="y", delimiter="\t")
+points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
+p <- read_points(points.file, type = "shp")
 plot(r, col=colors$hex, legend=FALSE)
-points(p, pch=19, col="black")
-text(p, p$id, adj=c(0.5,-0.5), font=2, col="black", cex=1.1)
+plot(p, pch=19, col="black", add=T)
+text(x=p, p$id, adj=c(0.5, -0.5), font=2, col="black", cex=1.1)
 ```
 
 > In any analysis of spatial data it's a good practice to keep coordinate systems consistent. Shape files usually already have a crs assigned, but users might be shure using the code bellow.
@@ -138,7 +138,7 @@ b <- c(250, 500, 1000, 1500)
 
 #To plot buffers
 ps  <- st_as_sf(do.call(rbind, replicate(4,p)))
-bfs <- st_buffer(ps, rep(b, each=4))
+bfs <- st_buffer(ps, rep(b, 4))
 #calling the plots
 plot(r, col=colors$hex)
 points(p, pch=16, col="blue", cex=0.5)
@@ -159,9 +159,9 @@ multiscales <- decouple(r, p, b)
 
 > It might take a couple seconds or minuts depending on the resolution of the raster, the number of sites and buffers.
 
-We can take a look at the object returned. It is a list of several raster objects ( _`p`_ x _`b`_). The first level correspond to each site and the second level to each buffer.
+We can take a look at the object returned. It is a list of several RasterBrick objects ( _`p`_ x _`b`_). Each item on the list correspond to a sampling site and each scale is a layer in the RasterBrick
 
-Raster names follow the format _"id_bufferSize"_. So the first buffer in our example will be the **s1_250**, then **s1_500**, and so on...
+Rasters on the list are named following the site ID, as provided by the _p_ object (.shp file). 
 
 ```{r, include=F}
 head(multiscales, 1)
@@ -170,41 +170,41 @@ head(multiscales, 1)
 
 ```
 
-As any list, we can access specific elements with a very simple syntax. Let's say we would like to access the raster object from the buffer 500 at the site s1. We only have to use a command like this:
+It's very streightforward to access any scale and sampling site.
+The sintax `multiscales$p01$X250` will return the _250 metters buffer_ from the _p01_ site.
 
 ```{r}
-multiscales[[1]][[2]]
+multiscales$p01$X250
 ```
 
-> Note that the buffers follow the order we used in the parameters. In this example the multiscales[[1]][[1]] represent the buffer of 250 m at the site p01; multiscales[[1]][[2]] the one of 500 m; multiscales[[1]][[3]] = 1000 m and multiscales[[1]][[4]] = 1500. The same might be applicable for any other site just using multiscales[[2]][[1]], so on...
+> traditional list sintax will also works. The following sintax will return the same: `multiscales[[1]][[1]]`
 
 We can extract very basic information of the raster with the function `extract_metrics` just like bellow:
 
 ```{r}
 metrics <- extract_metrics(multiscales, countNA = "no")
-metrics[[1]]
+head(metrics)
 ```
 
-Just like the output from `decouple`, the output from `extract_metrics` is a list of data.frames with very basic stats, like the counting of a specific class, its percentage, total number of classes in a given scale and compositional heterogeneity.
+The output from `extract_metrics` is a data frame with very basic stats, as class counting, its percentage, total number of classes in a given scale and compositional heterogeneity.
 
 Finally we can plot it. The package has a wrapper for the native `plot` function which will allow us to plot some sets of scales directly.
 
 ```{r}
 #to plot everything
 plot_decoupled(multiscales)
-
 ```
 
 To plot scales from a particular site, changing the color pallet...   
 ```{r}
-plot_decoupled(multiscales[[1]], pallete = "viridis")
+plot_decoupled(multiscales$p01, pallete = "viridis")
 ```
 
-Plotting with different layouts (cols and rows) and custom colors.
+Plotting with custom colors.
 
 ```{r}
 #All plots in a 4x4 grid
-plot_decoupled(multiscales, rows = 4, cols =4, 
+plot_decoupled(multiscales$p01,
                legend = T,
                colors = colors$hex, 
                breaks = breaks)
@@ -213,7 +213,7 @@ plot_decoupled(multiscales, rows = 4, cols =4,
 At last, we can save the decoupled scales in local files to access in other software or packages.
 
 ```{r, include=T, eval=FALSE, warning=FALSE}
-write_scales(x = multiscales, buffer.names = b, format = 'GTiff')
+write_scales(x = multiscales, path = getwd(), format = 'GTiff')
 ```
 
 ### Specific decoupling
@@ -222,7 +222,7 @@ Users might want to decouple specific scales, for instance, decouple a scale bet
 
 ```{r, warning=FALSE, message=FALSE}
 b<-c(250, 500, 1000, 1500)
-specific.scales <- decouple(r, p, b, dec.specific = c(2))
+specific.scales <- decouple(r, p, b, specific = c(2))
 #you can also decouple more scales at once, like this
 #specific.scales <- decouple(r, p, b, dec.specific = c(2,4))
 ```
@@ -234,16 +234,17 @@ plot_decoupled(specific.scales[[1]],
                rows=1, cols=2,
                colors = colors$hex, 
                breaks = breaks)
+#you defined breaks values up above with c(as.numeric(levels(as.factor(values(r)))))
 ```
 
-It is easy to see that we are fully able to compare any information from one scale related to the whole left. You may also notice that the name of the "nonspecific" scale is a concatenation of two other buffers we used to configure our landscape.
+It is easy to see that we are fully able to compare any information from one scale against to the whole left. You may also notice that the name of the "nonspecific" scale is a concatenation of two other buffers we used to configure our landscape.
 
 If we extract the metrics from these two raster it will seems like this:
 
 ```{r}
 specific.scales.metrics <- extract_metrics(specific.scales)
 
-specific.scales.metrics[[1]]
+head(specific.scales.metrics)
 
 ```
 
@@ -251,7 +252,7 @@ Here above we can see three data frames, one with the data from the 500m buffer,
 
 ## Compatibility with other packages
 
-The output of the `decouple` function is an list of raster, so users can take advantage of R list functionalities to work with different packages and operations.
+The output of the `decouple` function is an list of RasterBrick objects, in which each scales is a layer, so users can take advantage of R list functionalities to work with different packages and operations.
 
 ### Ploting with other packages
 
@@ -264,30 +265,10 @@ You just need to stack the list or make sure you are pointing to an specific ras
 ```{r}
 #For R base
 plot(specific.scales[[1]][[2]])
-#or plot (multiscales[[1]][[4]])
+#or plot(specific.scales$p01$X500)
+#or plot(multiscales[[1]][[4]])
+#or plot(multiscales$p01$X250)
 
-```
-
-Using `plot(specific.scales[[1]])` or `plot(multiscales[[1]])` will not work because both point to an list of lists.
-
-There are two ways to workaround. First, using `plot_decoupled` as mentioned before, or using `stack`.
-
-**Plotting stacks**
-
-An example with our object `specific.scales`
-
-```{r}
-map1 <- stack(specific.scales[[1]])
-plot(map1)
-```
-
-And `multsicales` as well
-
-```{r}
-#same for multiscales:
-map2 <- stack(multiscales[[1]])
-plot(map2)
-#alternatively: plot(stack(multiscales[[1]]))
 ```
 
 **Plotting with tmap**
@@ -296,8 +277,8 @@ plot(map2)
 
 ```{r}
 library("tmap")
-#creating and stack
-map1 <- stack(specific.scales[[1]])
+#creating a map for the site p01
+map1 <- specific.scales$p01
 #checking the categories in this stack
 mapcat <- levels(as.factor(values(map1)))
 #filtering colors that match with stacks
@@ -324,9 +305,9 @@ We can provide the output from the `LandscapeDecoupled` as input into functions 
 
 ```{r, warning=FALSE}
 library("landscapemetrics")
-area <- calculate_lsm(specific.scales[[1]], level = "class", metric = "area")
+area <- calculate_lsm(specific.scales$p01, level = "class", metric = "area")
 #Just to show you who are layers 1 and 2 for the landscapeMetrics
-paste0("layer", c(1:2),": ", lapply(specific.scales[[1]],names))
+paste0("layer", c(1:2),": ", names(specific.scales$p01))
 area[area$metric=="area_mn",  ]
 
 #You can also do like this:
@@ -335,12 +316,26 @@ area[area$metric=="area_mn",  ]
 #area
 ```
 
-As you can see, `landscapeMetrics` understand the list of two raster objects we gave to it as layers. Therefore, the first layer represents the s1_500 and the layer two is the s1_250_s1_1500.
+As you can see, `landscapeMetrics` can read the layers in raster contained into `specific.scales[[1]]` index or `specific.scales$p01`. Therefore, the first layer represents the s1_500 and the layer two is the mergeing of X250, X1000, and X1500.
 
-To go forward through your sites you only have to change the index in the list of raster objects, to grab data from site 2 you can do like this:
+To walk through our sites we only have to change the index in the list of raster objects (`multsicales` or `specific.scales`). To grab the data from site 2 you can do like this:
 
 `specific.scales[[2]]`
 
+or
+
+`specific.scales$p02`
+
+you can also do all sites at once like this:
+
+```{r}
+lsmetrics_area <- lapply(specific.scales, calculate_lsm, "class", "area" )
+head(lsmetrics_area$p01)
+#or head(lsmetrics_area$p02) #and so on...
+
+```
+
+You can always change `"class"` by any other level or `"area"` by one of the metrics in landscapemetrics.
 
 ## So, now what?
 
@@ -350,7 +345,7 @@ I hope you find it helpful and useful, but if you end up on any crash or may hav
 
 ## References
 
-Some published papers about the methodology and how to use it:
+Some published papers about using similar approaches:
 
 **Bee responses to landscape composition on coupled and decoupled multiscale approaches**     
 _Lazaro Carneiro, Milton Cezar Ribeiro, Willian Moura de Aguiar, Camila de Fátima Priante, Wilson Frantine-Silva, Maria Cristina Gaglianone_      

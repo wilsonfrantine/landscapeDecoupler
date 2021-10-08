@@ -20,9 +20,6 @@ decoupler <- function (r, p, radius, id){
 
   for(i in  1:(length(radius)-1)){
 
-    e <- raster::extent(raster::buffer(p, max(radius)))
-    r1 <- raster::crop(r, e)
-
     buffer1 <- raster::buffer(p, radius[i])
     buffer2 <- raster::buffer(p, radius[i+1])
 

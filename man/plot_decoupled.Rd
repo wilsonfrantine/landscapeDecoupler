@@ -13,6 +13,7 @@ plot_decoupled(
   pallete = "Terrain",
   reverse.pal = T,
   legend = T,
+  leg.adj = 1,
   ...
 )
 }
@@ -32,6 +33,8 @@ plot_decoupled(
 \item{reverse.pal}{a logical indicating whether to reverse the pallet}
 
 \item{legend}{a logical whether to the pallet}
+
+\item{leg.adj}{a adjustment multiplyer to legend x position. Usefull when changing cols number in plot area. Default is 1, but values between 0.9 and 1.2 should work fine.}
 
 \item{...}{other valid parameter for the plot function}
 }

@@ -28,7 +28,7 @@ The name of the field containing sites longitude coordinates}
 read georeferenced points
 }
 \examples{
-points.file <- system.file("extdata/points.txt", package="landscapeDecoupler")
-p <- read_points(points.file,type="txt",id="id",lat="x",long="y", delimiter="\t")
+points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
+p <- read_points(points.file,type="shp")
 plot(p, pch=19, col="black")
 }
