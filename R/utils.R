@@ -1,9 +1,13 @@
-#Declaring some imports to link to the name space
+# Imports ####
 
 #' @import methods raster rgeos sf sp graphics
 #' @importFrom parallel makeCluster mclapply detectCores stopCluster
+#' @importFrom future.apply future_lapply
 #' @importFrom landscapemetrics calculate_lsm
+#' @importFrom stats reshape
 
+# Functions ####
+## Deprecated Functions ####
 #' @name return_specifics
 #' @noRd
 #' @keywords internal
@@ -27,6 +31,8 @@ list_depth <- function(x,x.depth=0){
   }
 }
 
+## In use functions ####
+### Plotting related functions ####
 #' @name compute_breaks
 #' @noRd
 #' @keywords internal
@@ -40,6 +46,7 @@ compute_breaks <- function(x){
   return(temp)
 }
 
+### Decoupling-related functions
 #' @name sbuffers
 #' @title Creates a list of Buffers from SpatialPoints and a buffer list
 #' @param p a single SpatialPoint object
@@ -59,7 +66,6 @@ sbuffers <- function(p, b){
 bintersect <- function(b){
   append(b[[1]], lapply(1:I(length(b)-1), function(x) b[[x+1]]-b[[x]] ))
 }
-
 #' @name cropper
 #' @title Crop rasters at maximum buffer size
 #' @param r a raster as input
@@ -97,5 +103,69 @@ sp_list <- function(p){
     res.list[[i]] <- p[i,]
   }
   return(res.list)
+}
+### Other utility functions ####
+#' @name sum.classes
+#' @title summarize classes
+#' @description Several times we would like aggregate two or more classes.
+#' This function takes the output from extract_metrics or calc_lsm and
+#' summarize any given classes by user provide function
+#' @param x an output from extract metrics
+#' @param vals the values of classes that should be summarized
+#' @param var the metric to be summed
+#' @param fun a function to summarize the metric. Popular functions are "sum", "mean"...
+#' Users can also use custom functions as: function(x){log(x+1)}
+#' @seealso extract_metrics calc_lsm sum.scales
+#' @noRd
+sum.classes <- function(x, vals, var="percent", fun="sum"){
+  sites   = unique(x$site)
+  scales  = unique(x$scale)
+  classes = unique(x$class)
+
+  all.comb <- expand.grid("class"= sort(classes), "scale" = scales, "site"=sites)
+
+  td <- merge(x, all.comb, all=TRUE)
+  td[is.na(td)] <- 0
+
+  exp <- td$class %in% vals
+  fd <- td[exp,]
+  fd <- fd[fd$metrics == var,]
+
+  sum.data <- aggregate(value ~ site+scale, data=fd, FUN=fun)
+  sum.data <- sum.data[order(sum.data$site),]
+  names(sum.data) <- c(names(sum.data)[1:2], var)
+
+  return(sum.data)
+}
+
+#' @name sum.scales
+#' @title summarize scales
+#' @description This function takes the output from extract_metrics or calc_lsm and
+#' summarize scales by any provided metric and function.
+#' Popular functions ara "mean","sum"...
+#' @param x an output from extract metrics
+#' @param vals the values that should be summed
+#' @param var column name indicating which metrics might be summed
+#' @param fun a function to sum the metrics. Popular functions are "sum", "mean".
+#' Users can also use custom functions as: function(x){log(x+1)}
+#' @seealso extract_metrics calc_lsm sum.classes
+#' @noRd
+sum.scales <- function(x, metric, fun="mean"){
+  sites   = unique(x$site)
+  scales  = unique(x$scale)
+  classes = unique(x$class)
+
+  all.comb <- expand.grid("class"= sort(classes), "scale" = scales, "site"=sites)
+
+  td <- merge(x, all.comb, all=TRUE)
+  td[is.na(td)] <- 0
+
+  fd <- td[td$metrics == metric,]
+
+  sum.data <- aggregate(value ~ site+scale, data=fd, FUN=fun)
+  sum.data <- sum.data[order(sum.data$site),]
+  names(sum.data) <- c(names(sum.data)[1:2], metric)
+
+  return(sum.data)
 }
 

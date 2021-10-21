@@ -31,7 +31,7 @@ plot_decoupled <- function (x, cols = NULL, rows = NULL, colors=NULL, breaks=NUL
                -0.0734 * 1.4969^(11:50))
   if(is.list(x)){
     if(list_depth(x)==1){
-      graphics::par(mfrow=c(rows,cols), mar=c(2,2,2,2))
+      graphics::par(mfrow=c(rows,cols), mar=c(2,2,2,3))
       for(i in 1:length(x)){
         for(l in 1:nlayers(x[[i]])){
           x[[i]][[l]]<-as.factor(x[[i]][[l]])
@@ -52,7 +52,7 @@ plot_decoupled <- function (x, cols = NULL, rows = NULL, colors=NULL, breaks=NUL
       }
     }
   }else if (grepl("Raster", class(x))){
-    graphics::par(mfrow=c(rows,cols), mar=c(2,2,2,2))
+    graphics::par(mfrow=c(rows,cols), mar=c(2,2,2,3))
     for(l in 1:nlayers(x)){
       x[[l]]<-as.factor(x[[l]])
       r_levels <- levels(x[[l]])

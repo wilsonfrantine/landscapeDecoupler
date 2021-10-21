@@ -10,10 +10,14 @@ calc_lsm <- function(x, level=NULL, metric=NULL, ...) {
   Reduce(
     function(site.i,site.j){merge(site.i,site.j, all=T)},
     lapply(1:length(x), function(k) {
-      data.frame(
-        "site"= names(x)[k],
-        landscapemetrics::calculate_lsm(x[[k]], level, metric, ...)
+      df<-data.frame(
+        "site"  = names(x)[k],
+        landscapemetrics::calculate_lsm(x[[k]], level, metric)
       )
+      a <- as.factor(df$layer)
+      levels(a)<-names(x[[k]])
+      df$layer <- a
+      return(df)
     })
   )
 }

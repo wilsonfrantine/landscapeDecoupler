@@ -15,6 +15,7 @@ Depends:
     sp,
     methods,
     rgeos,
+    future.apply,
     landscapemetrics
 Suggests: 
     rmarkdown,

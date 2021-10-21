@@ -55,7 +55,7 @@ Now lets cover an example:
 
 We first **load the package**:
 
-```{r}
+```{r, results='hide'}
 library(landscapeDecoupler)
 ```
 
@@ -87,7 +87,7 @@ head(colors)
 We now find the unique values from the raster and use it to filter only the colors presented in our landscape.        
 ```{r, warning=FALSE}
 #2.1 - creating some breaks to match categories and colors
-breaks <- c(as.numeric(levels(as.factor(values(r)))))
+breaks <- c(as.numeric(levels(as.factor(getValues(r)))))
 #2.2 - matching index values and breaks
 colors <- colors[colors$value %in% breaks,]
 #2.3 - ordering by values
@@ -111,7 +111,10 @@ legend(x=268700, y=7600000,
 
 Users can read latitude and longitude files through the `sf` package functions. Users are encouraged to provide an "id" field in shape files in order to keep custom site names. Otherwise, sites will be sequentially named.
 
-In this example we will load an simple txt file, with three columns: id, x and y. Lists of sites are also very common and the function `read_points` is able to handle txt file like this. 
+In this example we will load an shp file with the function `read_points`. 
+
+> IMPORTANT
+shape files or txt files must have a field named "id" as it will be used as unique identifier for the outputs
 
 ```{r}
 #2 - reading points
@@ -191,8 +194,8 @@ The output from `extract_metrics` is a data frame with very basic stats, as clas
 Finally we can plot it. The package has a wrapper for the native `plot` function which will allow us to plot some sets of scales directly.
 
 ```{r}
-#to plot everything
-plot_decoupled(multiscales)
+#to plot the first four sites
+plot_decoupled(multiscales[1:3], cols = 4, rows= 3)
 ```
 
 To plot scales from a particular site, changing the color pallet...   
@@ -203,11 +206,9 @@ plot_decoupled(multiscales$p01, pallete = "viridis")
 Plotting with custom colors.
 
 ```{r}
-#All plots in a 4x4 grid
-plot_decoupled(multiscales$p01,
-               legend = T,
-               colors = colors$hex, 
-               breaks = breaks)
+#p01 and p02 plots in a 4x2 grid
+plot_decoupled(multiscales[1:2], cols=4, rows=2,
+               colors = colors$hex)
 ```
 
 At last, we can save the decoupled scales in local files to access in other software or packages.
@@ -218,23 +219,19 @@ write_scales(x = multiscales, path = getwd(), format = 'GTiff')
 
 ### Specific decoupling
 
-Users might want to decouple specific scales, for instance, decouple a scale between 250 and 500 m out of a landscape with 1500 m radius total. In the LandscapeDecouple package it is simply done as bellow:
+Users might want to decouple specific scales from a "doucoupled" landscape, for instance, decouple a scale between 250 and 500 m out of a landscape with 1500 m radius total. In the LandscapeDecouple package it is simply done as bellow:
 
 ```{r, warning=FALSE, message=FALSE}
-b<-c(250, 500, 1000, 1500)
-specific.scales <- decouple(r, p, b, specific = c(2))
-#you can also decouple more scales at once, like this
-#specific.scales <- decouple(r, p, b, dec.specific = c(2,4))
+specific.scales <- decouple.specific(multiscales, specific = 2)
+#you can also decouple more scales at once, like bellow:
+#specific.scales <- decouple.specific(multiscales, c(2,4))
 ```
 
 for visual inspection, the user can plot the resulted scales at the site 01:
 
 ```{r}
-plot_decoupled(specific.scales[[1]], 
-               rows=1, cols=2,
-               colors = colors$hex, 
-               breaks = breaks)
-#you defined breaks values up above with c(as.numeric(levels(as.factor(values(r)))))
+plot_decoupled(specific.scales[[1]], rows=1, cols=2,
+               colors = colors$hex)
 ```
 
 It is easy to see that we are fully able to compare any information from one scale against to the whole left. You may also notice that the name of the "nonspecific" scale is a concatenation of two other buffers we used to configure our landscape.
@@ -248,7 +245,14 @@ head(specific.scales.metrics)
 
 ```
 
-Here above we can see three data frames, one with the data from the 500m buffer, other with 1500 and a third with the buffers left from the sampling site s1.
+`extract_metrics` is a very fast and convinient way to get some metrics from two different levels: `classes` and `landscape`
+     `counts` = number of cells for a given class
+     `heterog` = the landscape heterogeneity
+     `n_class` = the number of classes in a given landscape
+     `percent` = the proportion of each class in a given landscape
+
+The package also has the possibility to access any metrics in `landscapeMetrics` package. See details in following sections.
+
 
 ## Compatibility with other packages
 
@@ -271,6 +275,9 @@ plot(specific.scales[[1]][[2]])
 
 ```
 
+>IMPORTANT
+if you "id" field is not alphanumeric R will fale in use the `$` operator to access list names. Therefore, you will have to use an syntax like `myobject[1]` to get accesses to your scales in the same order you passed it to the function.
+
 **Plotting with tmap**
 
 `tmap` is a quite popular map plotting package and can be easily used to produce more elaborated plots:
@@ -280,7 +287,7 @@ library("tmap")
 #creating a map for the site p01
 map1 <- specific.scales$p01
 #checking the categories in this stack
-mapcat <- levels(as.factor(values(map1)))
+mapcat <- levels(as.factor(getValues(map1)))
 #filtering colors that match with stacks
 mapcols <- colors[ colors$value %in% mapcat ,]
 #now plotting
@@ -297,7 +304,7 @@ tm_shape(map1) +
 ```
 
 
-### Calculating metrics with other packages
+### Calculating Metrics
 
 Once the user has defined the desired level of comparison and extract his landscape, one might want to proceed with more complex analysis. Other packages as `LandscapeMetrics` might be used to calculate landscape properties.
 
@@ -310,7 +317,12 @@ metrics.from.lsm <- calc_lsm(multiscales, level="class", metric=c("ai","ca"))
 head(metrics.from.lsm)
 ```
 
-We can provide the output from the `LandscapeDecoupled` as input into functions as `calculate_lsm`, since the output is a raster object. Users might do this as follow:
+As you can see, it is quite easy to access any metrics from landscapeMetrics using `calc_lsm`. You can list available metrics with `list_lsm()`.
+
+
+#### Using `landscapeMetrics` functions
+
+Although it is not so streightforward as `calc_lsm`, users can also provide the output from the `LandscapeDecoupled` as input into functions from `landscapeMetrics` as follow:
 
 ```{r, warning=FALSE}
 library("landscapemetrics")
@@ -325,7 +337,7 @@ area[area$metric=="area_mn",  ]
 #area
 ```
 
-As you can see, `landscapeMetrics` can read the layers in raster contained into `specific.scales[[1]]` index or `specific.scales$p01`. Therefore, the first layer represents the s1_500 and the layer two is the mergeing of X250, X1000, and X1500.
+`landscapeMetrics` can read the layers in raster contained into `specific.scales[[1]]` index or `specific.scales$p01`. Therefore, the first layer represents the X500 and the seccond layer is the merging of X250, X1000, and X1500.
 
 To walk through our sites we only have to change the index in the list of raster objects (`multsicales` or `specific.scales`). To grab the data from site 2 you can do like this:
 
@@ -334,6 +346,10 @@ To walk through our sites we only have to change the index in the list of raster
 or
 
 `specific.scales$p02`
+
+>REMEMBER:
+    The `$` operator only works when lists have alphanumeric names. 
+    Otherwise the `[]` operators will be needed.
 
 you can also do all sites at once like this:
 
