@@ -31,7 +31,7 @@ list_depth <- function(x,x.depth=0){
   }
 }
 
-## In use functions ####
+## Functions in use ####
 ### Plotting related functions ####
 #' @name compute_breaks
 #' @noRd
