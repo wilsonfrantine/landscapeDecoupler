@@ -28,5 +28,5 @@ x <- decouple(r, p, b)
 calc_lsm(x, level = "landscape", "shdi")
 }
 \seealso{
-\code{\link{extract_metrics}}, \code{\link{decouple}}, \code{\link{decouple.specific}},  \code{\link{multiscales}}, \link[landscapemetrics:calculate_lsm]{landscapemetrics::calculate_lsm }
+\link{extract_metrics() }, \link{decouple() }, \link{decouple.specific() },  \link{multiscales() } , \link[landscapemetrics:calculate_lsm() ]{landscapemetrics::calculate_lsm() }
 }

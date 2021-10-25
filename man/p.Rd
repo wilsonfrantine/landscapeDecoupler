@@ -22,7 +22,7 @@ p
 Euglossini Sampling Sites SpatialDataFrame
 }
 \details{
-Code used to create this data:https://open.spotify.com/track/1fDdICddAV4wshXvu3eDrm
+Code used to create this data:
 points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 p <- read_points(points.file, type = "shp")
 }
