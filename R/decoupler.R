@@ -5,6 +5,7 @@
 #' @param p a spatialPoint to use as buffer center
 #' @param radius a vector of radius to decoupling. If the subjected raster is not in ultrametric system, the radius will be then calculated in map units
 #' @param id identifiers for each of p objects that will be passed to layers' name
+#' @keywords internal
 
 decoupler <- function (r, p, radius, id){
 

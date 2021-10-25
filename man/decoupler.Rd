@@ -18,3 +18,4 @@ decoupler(r, p, radius, id)
 \description{
 This function is for internal use only
 }
+\keyword{internal}

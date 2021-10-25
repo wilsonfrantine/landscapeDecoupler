@@ -5,7 +5,7 @@
 \alias{r}
 \title{Raster information (Euglossini dataset)}
 \format{
-A raster from MapBiomas 5.0 colection
+A raster from MapBiomas 5.0 collection (Souza et al. 2020)
 }
 \source{
 MapBiomas 5.0 colection
@@ -18,10 +18,10 @@ Raster information (Euglossini dataset)
 }
 \details{
 Code used to create this data:
-   r <- system.file("extdata/raster.grd", package="landscapeDecoupler")
-   r <- raster(r)
+r <- system.file("extdata/raster.grd", package="landscapeDecoupler")
 }
 \references{
 Carneiro LS, Aguiar WM, Priante CF, Ribeiro MC, Frantine-Silva W & Gaglianone MC (2021).	Front. Ecol. Evol., 9, 264. \url{https://doi.org/10.3389/fevo.2021.628319}
+Souza at. al. (2020) Remote Sensing, 12, 17, doi:10.3390/rs12172735
 }
 \keyword{datasets}

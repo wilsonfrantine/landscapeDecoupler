@@ -7,9 +7,9 @@
 \format{
 SpatialDataFrame with 15 sampling sites coordinates in UTM system
 \describe{
-  \item{id}{required id for sampling sites, character}
-  \item{x}{longitudinal coordinates, double}
-  \item{y}{latitudinal coordinates, double}
+\item{id}{required id for sampling sites, character}
+\item{x}{longitudinal coordinates, double}
+\item{y}{latitudinal coordinates, double}
 }
 }
 \source{
@@ -22,7 +22,7 @@ p
 Euglossini Sampling Sites SpatialDataFrame
 }
 \details{
-Code used to create this data:
+Code used to create this data:https://open.spotify.com/track/1fDdICddAV4wshXvu3eDrm
 points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 p <- read_points(points.file, type = "shp")
 }

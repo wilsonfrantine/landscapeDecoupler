@@ -7,14 +7,26 @@
 calc_lsm(x, level = NULL, metric = NULL, ...)
 }
 \arguments{
-\item{x}{an output from decouple}
+\item{x}{an output from decouple() decouple.specific() or multiscales()}
 
-\item{level}{one of the levels considered by landscapemetrics}
+\item{level}{Character: "landscape", "class" or "patch"}
 
-\item{metric}{one of the metrics accepted by landscapemetrics}
+\item{metric}{Character: one of the metrics in landscapemetrics. See list_lsm()}
 
-\item{...}{any o other parameter from calulate_lsm}
+\item{...}{any o other parameter from calulate_lsm() in landscapemetrics}
 }
 \description{
 this function return a long format data frame by reshaping a calling of calculate_lsm from landscapeMetrics
+}
+\examples{
+#don't need to run this
+r <- raster(system.file("extdata/raster.grd", package="landscapeDecoupler"))
+p <- read_points(system.file("extdata/pnts.shp", package="landscapeDecoupler"), type="shp")
+#setting buffers sizes
+b = c(1000,2000,3000)
+x <- decouple(r, p, b)
+calc_lsm(x, level = "landscape", "shdi")
+}
+\seealso{
+\code{\link{extract_metrics}}, \code{\link{decouple}}, \code{\link{decouple.specific}},  \code{\link{multiscales}}, \link[landscapemetrics:calculate_lsm]{landscapemetrics::calculate_lsm }
 }
