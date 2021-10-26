@@ -49,9 +49,13 @@ r <- landscapeDecoupler::r
 p <- landscaleDecoupler::p
 b <- c(1000,2000)
 ls <- decouple(r, p, b)
-plot_decoupled(ls$p02)
-plot_decoupled(ls[1:2])
+plot_decoupled(ls$p01)
+plot_decoupled(ls[[1]])
+plot_decoupled(ls[1:2], cols=2, rows=2)
 plot_decoupled(ls[1:4], cols = 4, rows = 2)
+plot_decoupled(ls$p01, pallete = "viridis", rows = 1)
+class.colors <- c("green", "red", "yellow", "#AAAAFF", rgb(0.1,0.5,0.9,1))
+plot_decoupled(ls$p01, colors=class.colors)
 }
 \seealso{
 \link[raster:plot() ]{raster::plot() }, \link{hcl.pals() }
