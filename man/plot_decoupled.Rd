@@ -13,7 +13,7 @@ plot_decoupled(
   pallete = "Terrain",
   reverse.pal = T,
   legend = T,
-  leg.adj = 1,
+  leg.adj = 1.1,
   ...
 )
 }
@@ -28,7 +28,7 @@ plot_decoupled(
 
 \item{breaks}{the conventional breaks from the plot function. These breaks match the values in the raster object and the vector of colors given by users or functions}
 
-\item{pallete}{a hcl valid pallete (to see options use hcl.pals()). The defualt is "Terrain"}
+\item{pallete}{a hcl valid pallete (to see options use \link{hcl.pals() }). The defualt is "Terrain"}
 
 \item{reverse.pal}{a logical indicating whether to reverse the pallet}
 
@@ -40,5 +40,20 @@ plot_decoupled(
 }
 \description{
 Plot decoupled landscapes
+}
+\details{
+this function was designed to facilitate the plotting of objects returned by the functions \link{decouple() }, \link{decouple.specific() }, and \link{nestedscales() }. Users can control specificities about different aspects of plotting categorical raster and creating copositions of such plots.
+}
+\examples{
+r <- landscapeDecoupler::r
+p <- landscaleDecoupler::p
+b <- c(1000,2000)
+ls <- decouple(r, p, b)
+plot_decoupled(ls$p02)
+plot_decoupled(ls[1:2])
+plot_decoupled(ls[1:4], cols = 4, rows = 2)
+}
+\seealso{
+\link[raster:plot() ]{raster::plot() }, \link{hcl.pals() }
 }
 \keyword{function}

@@ -16,7 +16,10 @@
 #' @examples
 #' points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 #' p <- read_points(points.file,type="shp")
-#' plot(p, pch=19, col="black")
+#' plot(landscapeDecoupler::r)
+#' plot(p, add=T)
+#' text(p, labels=p$id)
+
 
 read_points <- function(x, type="txt", delimiter="\t", id="id",
                         lat="x", long="y"){

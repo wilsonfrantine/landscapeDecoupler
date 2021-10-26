@@ -2,17 +2,32 @@
 % Please edit documentation in R/nestedscales.R
 \name{nestedscales}
 \alias{nestedscales}
-\title{Design Multiscale landscapes}
+\title{Nested Scales}
 \usage{
-nestedscales(r, p, b)
+nestedscales(r,p,b)
 }
 \arguments{
 \item{r}{a raster object. Raster must be projected to an UTM system, otherwise, buffer sizes will be given in map units.}
 
-\item{p}{a set of Spatial* or simple_features points from where buffers will be calculated}
+\item{p}{a set of sampling sites (SpatialPointsDataFrame, SpatialPoints simple_features) points from where buffers will be calculated.}
 
 \item{b}{a vector of buffer sizes (radii in meters) to be calculated. If a single value is provided the function returns a simple buffer cut.}
 }
 \description{
-The function crop out buffers from a landscape raster file, origin Spatial points and radii sizes.
+This function crops out buffers from a landscape ginven a raster file ( \emph{r} ), one or more sampling sites ( \emph{p} ) and radii sizes ( \emph{b} ). The function returns a list with one raster files for each sampling site and one RasterBricks layer for each provided buffer size.
+}
+\examples{
+path.to.your.raster <- system.file("extdata/raster.grd", package="landscapeDecoupler")
+path.to.your.sampling.points <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
+r <- raster(path.to.your.raster)
+p <- read_points(path.to.your.sampling.points, type="shp")
+b <- c(1000,2000,3000)
+your.nested.scales <- nestedscales(r,p,b)
+plot(your.nested.scales$p02)
+}
+\seealso{
+\link{decouple() } \link{decouple.specific() }
+}
+\author{
+Wilson Frantine-Silva
 }
