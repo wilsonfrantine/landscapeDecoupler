@@ -54,7 +54,7 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
                      signif = TRUE, alpha = 0.05, return.plot = T, plot_est = FALSE, print_sum = FALSE,
                      xlab = "Radius [km]", ylab = NULL, labels = NULL, type = "b", pch = c(1, 16)){
 
-  # Arguments checking
+  # Arguments checking ####
   if(!is.character(mod) || length(mod) != 1) stop("Argument mod must be a character of length 1")
   if(!is.character(multief)) stop("Argument multief must be a character vector")
   if(!is.null(args)){ if(!is.character(args)) stop("Argument args must be NULL or a character vector") }
@@ -127,9 +127,6 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
     }
   }
 
-  # Function. Expression to string conversion
-  expr_depar <- function(x){ paste(deparse(x, width.cutoff = 500), collapse = "") }
-
   # Objects definition
   multief      <- factor(multief, levels = multief)
   if(!is.null(args))
@@ -156,134 +153,7 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
       stop("The formula, or the fixed effects defined in 'args', must include the expression 'multief' as a predictor variable")
   }
 
-  # Function. Summary table of the predictor variable at each spatial scale
-  lands_table <- function(multief, data){
-    table <- data.frame(spatial_scale = as.character(multief),
-                        n             = rep(0, length(multief)),
-                        min           = rep(0, length(multief)),
-                        max           = rep(0, length(multief)),
-                        range         = rep(0, length(multief)),
-                        mean          = rep(0, length(multief)),
-                        median        = rep(0, length(multief)))
-
-    for(i in 1:length(multief)){
-      if(!is.null(site_id)){
-        unique_vec <- aggregate(data[, as.character(multief[i])] ~ data[, site_id], FUN = unique)[, 2]
-        table[table$spatial_scale == multief[i], "n"]      <- length(na.omit(unique_vec))
-        table[table$spatial_scale == multief[i], "mean"]   <- mean(na.omit(unique_vec))
-        table[table$spatial_scale == multief[i], "median"] <- median(na.omit(unique_vec))
-      } else {
-        unique_vec <- unique(data[, as.character(multief[i])])
-        table[table$spatial_scale == multief[i], "n"]      <- NA
-        table[table$spatial_scale == multief[i], "mean"]   <- NA
-        table[table$spatial_scale == multief[i], "median"] <- NA
-      }
-      table[table$spatial_scale == multief[i], "min"]    <- min(na.omit(unique_vec))
-      table[table$spatial_scale == multief[i], "max"]    <- max(na.omit(unique_vec))
-      table[table$spatial_scale == multief[i], "range"]  <- range(na.omit(unique_vec))[2] - range(na.omit(unique_vec))[1]
-    }
-    return(table)
-  }
-
-  # Function. Extract the 'Good of Fitness' (AIC, BIC or R2) value for the models
-  extractGoF <- function(fitted_model, criterion){
-    value <- NULL
-
-    if(length(criterion) == 1){
-      if(criterion == "AIC") value <- AIC(fitted_model)
-      if(criterion == "BIC") value <- BIC(fitted_model)
-      if(criterion == "R2")  value <- summary(fitted_model)$r.squared
-    } else {
-      value <- do.call(criterion[1], list(fitted_model))
-    }
-
-    if(is.null(value) || is.na(value)){
-      if(length(criterion) == 1){
-        if(grepl("quasipoisson", args) && criterion %in% c("AIC", "BIC")){
-          stop("Quasipoisson models do not display AIC/BIC values.\n
-               We recommend running the models with a poisson family to get the AICs/BICs, proceed to the multi-scale analyis,
-               and then reran the selected model aside with a quasipoisson family to see the output")
-        } else {
-          stop(paste("Could not get the", criterion, "value for the specified models. Try another criterion?"), call. = FALSE)
-        }
-      } else {
-        stop(paste("Could not get the '", criterion[1], "' value for the specified models. Try another criterion?", sep = ""), call. = FALSE)
-      }
-    } else {
-      return(value)
-    }
-  }
-
-  # Function. Extract coefficients of the models
-  extract_coeff <- function(summary, i){
-    coeff   <- summary$coefficients
-    # If the model is a zero-inflated one (zeroinfl or hurdle from package pscl, glmmTMB from package glmmTMB, etc.)
-    if(is.list(coeff)){
-      opt <- names(coeff)
-      if(ele == FALSE){
-        ele <- readline(prompt = paste("Please, choose the type of model from where the estimated model coefficients will be extracted (",
-                                       paste(opt, ": ", 1:length(opt), sep = "", collapse = " - "),"): ", sep = ""))
-        if(ele %in% as.character(1:length(opt))){
-          ele   <- as.numeric(ele)
-          coeff <- coeff[[ele]]
-          ele   <<- ele
-        } else {
-          coeff <- coeff[[1]]
-          ele <<- 1
-          message("Could not recognise the inputted value. Option one was taken")
-        }
-      } else {
-        coeff <- coeff[[ele]]
-      }
-    }
-
-    # Trying to extract p.values...
-    p.types <- c("Pr(>|z|)", "Pr(>|t|)", "p-value", "p.value")
-    p.label <- p.types[p.types %in% colnames(coeff)]
-    if(length(p.label) > 0){
-      p.value <- coeff[as.character(multief[i]), p.label]
-    } else {
-      coeff   <- summary$tTable
-      p.types <- "p-value"
-      p.label <- p.types[p.types %in% colnames(coeff)]
-      if(length(p.label) > 0){
-        p.value <- coeff[as.character(multief[i]), p.label]
-      } else {
-        p.value <- NA
-      }
-    }
-
-    # Trying to extract e.values...
-    if("Estimate" %in% colnames(coeff)){
-      e.value <- coeff[as.character(multief[i]), "Estimate"]
-    } else {
-      if("Value" %in% colnames(coeff)){
-        e.value <- coeff[as.character(multief[i]), "Value"]
-      } else {
-        e.value <- NA
-      }
-    }
-    out <- c(p.value, e.value)
-    return(out)
-  }
-
-  # Function. Manage model's errors, warnings and messages
-  running <- function(expr) {
-    warns <- mess <- NULL
-    warn_handler <- function(w) {
-      warns <<- c(warns, list(w))
-      invokeRestart("muffleWarning")
-    }
-    mess_handler <- function(m) {
-      mess <<- c(mess, list(m))
-      NULL
-    }
-    val <- suppressMessages(tryCatch(withCallingHandlers(expr, warning = warn_handler, message = mess_handler), error = function(e) e))
-    out <- list(value = val, warnings = warns, messages = mess)
-    return(out)
-  }
-
-  # Run all models
+  # Run all models ####
   for(i in 1:length(multief)){
 
     # Replace the string 'multief' with the effect of each particular spatial scale
@@ -307,7 +177,7 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
       fits[[i]]          <- new_fit$value
       fits.GoF[i]        <- extractGoF(fits[[i]], criterion)
       sum.list[[i]]      <- summary(fits[[i]])
-      coeff              <- extract_coeff(sum.list[[i]], i)
+      coeff              <- extract_coeff(sum.list[[i]], i, multief)
       p.values[i]        <- coeff[1]
       e.values[i]        <- coeff[2]
     } else {
@@ -337,17 +207,6 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
     }
   }
 
-  # Function. Significance extraction of estimates
-  f_sign <- function(p.values){
-    if(any(!is.na(p.values))){
-      p.sign <- ifelse(p.values < alpha, TRUE, FALSE)
-    } else {
-      p.sign <- rep(0, length(p.values))
-      message("p.values could not be extracted")
-    }
-    return(p.sign)
-  }
-
   # If there are not fatal errors in all models...
   if(length(mod_errors) != length(multief)){
     # If there are GoF values to work with...
@@ -373,7 +232,7 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
       }
       if(signif){
         if(!all(is.na(p.values))){
-          p.sign <- f_sign(p.values)
+          p.sign <- f_sign(p.values, alpha)
         } else {
           p.sign <- rep(0, length(p.values))
           message("p.values could not be extracted")
@@ -437,7 +296,7 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
   }
 
   # Generate summary table of landscape attribute at each spatial scale
-  lands_summary <- lands_table(multief, data)
+  lands_summary <- lands_table(multief, data, site_id)
 
   # Print summary of the 'best' model?
   if(print_sum && !is.null(sum)) print(sum)
@@ -451,4 +310,143 @@ multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion 
   # Return the final object: a list with relevant information of the analysis, including the models itself
   out_obj <- list(lands_summary = lands_summary, summary = summ, plot = plot, models = fits, warnings = mod_warn, messages = mod_mess)
   invisible(out_obj)
+}
+
+# Function. Significance extraction of estimates
+f_sign <- function(p.values, alpha){
+  if(any(!is.na(p.values))){
+    p.sign <- ifelse(p.values < alpha, TRUE, FALSE)
+  } else {
+    p.sign <- rep(0, length(p.values))
+    message("p.values could not be extracted")
+  }
+  return(p.sign)
+}
+# Expression to string conversion
+expr_depar <- function(x){ paste(deparse(x, width.cutoff = 500), collapse = "")}
+# Function. Extract coefficients of the models
+extract_coeff <- function(summary, i, multief){
+  coeff   <- summary$coefficients
+  # If the model is a zero-inflated one (zeroinfl or hurdle from package pscl, glmmTMB from package glmmTMB, etc.)
+  if(is.list(coeff)){
+    opt <- names(coeff)
+    if(ele == FALSE){
+      ele <- readline(prompt = paste("Please, choose the type of model from where the estimated model coefficients will be extracted (",
+                                     paste(opt, ": ", 1:length(opt), sep = "", collapse = " - "),"): ", sep = ""))
+      if(ele %in% as.character(1:length(opt))){
+        ele   <- as.numeric(ele)
+        coeff <- coeff[[ele]]
+        ele   <<- ele
+      } else {
+        coeff <- coeff[[1]]
+        ele <<- 1
+        message("Could not recognise the inputted value. Option one was taken")
+      }
+    } else {
+      coeff <- coeff[[ele]]
+    }
+  }
+
+  # Trying to extract p.values...
+  p.types <- c("Pr(>|z|)", "Pr(>|t|)", "p-value", "p.value")
+  p.label <- p.types[p.types %in% colnames(coeff)]
+  if(length(p.label) > 0){
+    p.value <- coeff[as.character(multief[i]), p.label]
+  } else {
+    coeff   <- summary$tTable
+    p.types <- "p-value"
+    p.label <- p.types[p.types %in% colnames(coeff)]
+    if(length(p.label) > 0){
+      p.value <- coeff[as.character(multief[i]), p.label]
+    } else {
+      p.value <- NA
+    }
+  }
+
+  # Trying to extract e.values...
+  if("Estimate" %in% colnames(coeff)){
+    e.value <- coeff[as.character(multief[i]), "Estimate"]
+  } else {
+    if("Value" %in% colnames(coeff)){
+      e.value <- coeff[as.character(multief[i]), "Value"]
+    } else {
+      e.value <- NA
+    }
+  }
+  out <- c(p.value, e.value)
+  return(out)
+}
+
+# Function. Manage model's errors, warnings and messages
+running <- function(expr){
+  warns <- mess <- NULL
+  val <- suppressMessages(tryCatch(withCallingHandlers(expr, warning = warn_handler, message = mess_handler), error = function(e) e))
+  out <- list(value = val, warnings = warns, messages = mess)
+  return(out)
+}
+warn_handler <- function(w) {
+  warns <<- c(warns, list(w))
+  invokeRestart("muffleWarning")
+}
+mess_handler <- function(m) {
+  mess <<- c(mess, list(m))
+  NULL
+}
+
+# Function. Extract the 'Good of Fitness' (AIC, BIC or R2) value for the models ####
+extractGoF <- function(fitted_model, criterion){
+  value <- NULL
+
+  if(length(criterion) == 1){
+    if(criterion == "AIC") value <- AIC(fitted_model)
+    if(criterion == "BIC") value <- BIC(fitted_model)
+    if(criterion == "R2")  value <- summary(fitted_model)$r.squared
+  } else {
+    value <- do.call(criterion[1], list(fitted_model))
+  }
+
+  if(is.null(value) || is.na(value)){
+    if(length(criterion) == 1){
+      if(grepl("quasipoisson", args) && criterion %in% c("AIC", "BIC")){
+        stop("Quasipoisson models do not display AIC/BIC values.\n
+               We recommend running the models with a poisson family to get the AICs/BICs, proceed to the multi-scale analyis,
+               and then reran the selected model aside with a quasipoisson family to see the output")
+      } else {
+        stop(paste("Could not get the", criterion, "value for the specified models. Try another criterion?"), call. = FALSE)
+      }
+    } else {
+      stop(paste("Could not get the '", criterion[1], "' value for the specified models. Try another criterion?", sep = ""), call. = FALSE)
+    }
+  } else {
+    return(value)
+  }
+}
+
+# Function. Summary table of the predictor variable at each spatial scale ###
+lands_table <- function(multief, data, site_id){
+  table <- data.frame(spatial_scale = as.character(multief),
+                      n             = rep(0, length(multief)),
+                      min           = rep(0, length(multief)),
+                      max           = rep(0, length(multief)),
+                      range         = rep(0, length(multief)),
+                      mean          = rep(0, length(multief)),
+                      median        = rep(0, length(multief)))
+
+  for(i in 1:length(multief)){
+    if(!is.null(site_id)){
+      unique_vec <- aggregate(data[, as.character(multief[i])] ~ data[, site_id], FUN = unique)[, 2]
+      table[table$spatial_scale == multief[i], "n"]      <- length(na.omit(unique_vec))
+      table[table$spatial_scale == multief[i], "mean"]   <- mean(na.omit(unique_vec))
+      table[table$spatial_scale == multief[i], "median"] <- median(na.omit(unique_vec))
+    } else {
+      unique_vec <- unique(data[, as.character(multief[i])])
+      table[table$spatial_scale == multief[i], "n"]      <- NA
+      table[table$spatial_scale == multief[i], "mean"]   <- NA
+      table[table$spatial_scale == multief[i], "median"] <- NA
+    }
+    table[table$spatial_scale == multief[i], "min"]    <- min(na.omit(unique_vec))
+    table[table$spatial_scale == multief[i], "max"]    <- max(na.omit(unique_vec))
+    table[table$spatial_scale == multief[i], "range"]  <- range(na.omit(unique_vec))[2] - range(na.omit(unique_vec))[1]
+  }
+  return(table)
 }

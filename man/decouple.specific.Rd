@@ -7,7 +7,7 @@
 decouple.specific(ls = NULL, specific = NULL)
 }
 \arguments{
-\item{ls}{an output of \link{decouple() } or \link{nestedscales() } functions}
+\item{ls}{an output of \code{\link[=decouple]{decouple()}} or \code{\link[=nestedscales]{nestedscales()}} functions}
 
 \item{specific}{which scales will be kept independent of the others. If you have a three layer object from the decouple or nestedscale functions, then specific can be 1, 2, 3 or any combination of it as c(1,2) or c(2,3). Using all scales in the ls object will return the same object.}
 }
@@ -21,5 +21,5 @@ plot(decoupled.ls$p02)
 plot(spec$p02)
 }
 \seealso{
-\link{decouple() }, \link{nestedscales() }
+\code{\link[=decouple]{decouple()}}, \code{\link[=nestedscales]{nestedscales()}}
 }

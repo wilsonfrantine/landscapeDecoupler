@@ -1,22 +1,23 @@
 #' @name plot_decoupled
 #' @export plot_decoupled
+#' @noMd
 #' @keywords function
 #' @title Plot decoupled landscapes
 #' @param x a list of raster objects or a raster object
 #' @param cols the number of coloumns for a composition. Default = 1
 #' @param rows the number of rows for a composition. Default = 4
 #' @param colors a vector with hexadecilma or R-colors to be used for plot. If NULL the function will calculate a pallet based on the number of classes from the raster(s)
-#' @param pallete a hcl valid pallete (to see options use [hcl.pals() ]). The defualt is "Terrain"
+#' @param pallete a hcl valid pallete (to see options use \code{\link{hcl.pals}}). The defualt is "Terrain"
 #' @param breaks the conventional breaks from the plot function. These breaks match the values in the raster object and the vector of colors given by users or functions
 #' @param reverse.pal a logical indicating whether to reverse the pallet
 #' @param legend a logical whether to the pallet
 #' @param leg.adj a adjustment multiplyer to legend x position. Usefull when changing cols number in plot area. Default is 1, but values between 0.9 and 1.2 should work fine.
 #' @param ... other valid parameter for the plot function
-#' @seealso [raster::plot() ], [hcl.pals() ]
-#' @details this function was designed to facilitate the plotting of objects returned by the functions [decouple() ], [decouple.specific() ], and [nestedscales() ]. Users can control specificities about different aspects of plotting categorical raster and creating copositions of such plots.
+#' @seealso \code{\link{plot}}(raster package), \code{\link{hcl.pals}}
+#' @details this function was designed to facilitate the plotting of objects returned by the functions \code{\link{decouple}}, \code{\link{decouple.specific}}, and \code{\link{nestedscales}}. Users can control specificities about different aspects of plotting categorical raster and creating copositions of such plots.
 #' @examples
 #' r <- landscapeDecoupler::r
-#' p <- landscaleDecoupler::p
+#' p <- landscapeDecoupler::p
 #' b <- c(1000,2000)
 #' ls <- decouple(r, p, b)
 #' plot_decoupled(ls$p01)

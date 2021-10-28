@@ -12,9 +12,9 @@
 #' p <- read_points(system.file("extdata/pnts.shp", package = "landscapeDecoupler"), type = "shp")
 #' b <- c(750,1500,3000)
 #' my.decoupled.landscape <- decouple(r,p,b)
-#' @seealso [decouple.specific() ], [nestedscales() ]
+#' @seealso [decouple.specific()], [nestedscales()]
 #' @details this function was designed to sequentially perform both decoupling strategies: symetric (same size buffers) asymetric. Buffer sizes are meant to be higher than zero and increasing in size. Different settings will result in an unexpected behaviour.
-#' The functions can also runs in parallel using the "Future" API. Users must only set the parallelization extrategy with [future::plan() ] and run the function.
+#' The functions can also runs in parallel using the "Future" API. Users must only set the parallelization extrategy with [future::plan()] and run the function.
 
 decouple <- function(r, p, b){
   l <- lapply(lbuffers(p, b), bintersect)

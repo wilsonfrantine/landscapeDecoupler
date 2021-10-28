@@ -18,7 +18,7 @@ Return a list of RasterBricks with decoupled scales from a raster file, given sa
 }
 \details{
 this function was designed to sequentially perform both decoupling strategies: symetric (same size buffers) asymetric. Buffer sizes are meant to be higher than zero and increasing in size. Different settings will result in an unexpected behaviour.
-The functions can also runs in parallel using the "Future" API. Users must only set the parallelization extrategy with \link[future:plan() ]{future::plan() } and run the function.
+The functions can also runs in parallel using the "Future" API. Users must only set the parallelization extrategy with \code{\link[future:plan]{future::plan()}} and run the function.
 }
 \examples{
 r <- raster(system.file("extdata/raster.grd", package = "landscapeDecoupler"))
@@ -27,7 +27,7 @@ b <- c(750,1500,3000)
 my.decoupled.landscape <- decouple(r,p,b)
 }
 \seealso{
-\link{decouple.specific() }, \link{nestedscales() }
+\code{\link[=decouple.specific]{decouple.specific()}}, \code{\link[=nestedscales]{nestedscales()}}
 }
 \author{
 Wilson Frantine-Silva

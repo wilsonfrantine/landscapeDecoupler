@@ -6,7 +6,7 @@
 #' @param r a raster object. Raster must be projected to an UTM system, otherwise, buffer sizes will be given in map units.
 #' @param p a set of sampling sites (SpatialPointsDataFrame, SpatialPoints simple_features) points from where buffers will be calculated.
 #' @param b a vector of buffer sizes (radii in meters) to be calculated. If a single value is provided the function returns a simple buffer cut.
-#' @seealso [decouple() ] [decouple.specific() ]
+#' @seealso [decouple()] [decouple.specific()]
 #' @usage nestedscales(r,p,b)
 #' @examples
 #' path.to.your.raster <- system.file("extdata/raster.grd", package="landscapeDecoupler")

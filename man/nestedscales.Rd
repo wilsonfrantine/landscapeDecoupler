@@ -26,7 +26,7 @@ your.nested.scales <- nestedscales(r,p,b)
 plot(your.nested.scales$p02)
 }
 \seealso{
-\link{decouple() } \link{decouple.specific() }
+\code{\link[=decouple]{decouple()}} \code{\link[=decouple.specific]{decouple.specific()}}
 }
 \author{
 Wilson Frantine-Silva

@@ -7,7 +7,7 @@
 calc_lsm(x, level = NULL, metric = NULL, ...)
 }
 \arguments{
-\item{x}{an output from decouple() decouple.specific() or multiscales()}
+\item{x}{an output from \code{\link[=decouple]{decouple()}} \code{\link[=decouple.specific]{decouple.specific()}} or \code{\link[=nestedscales]{nestedscales()}}}
 
 \item{level}{Character: "landscape", "class" or "patch"}
 
@@ -28,5 +28,5 @@ x <- decouple(r, p, b)
 calc_lsm(x, level = "landscape", "shdi")
 }
 \seealso{
-\link{extract_metrics() }, \link{decouple() }, \link{decouple.specific() },  \link{multiscales() } , \link[landscapemetrics:calculate_lsm() ]{landscapemetrics::calculate_lsm() }
+\code{\link[=extract_metrics]{extract_metrics()}}, \code{\link[=decouple]{decouple()}}, \code{\link[=decouple.specific]{decouple.specific()}},  \code{\link[=nestedscales]{nestedscales()}} , \code{\link[landscapemetrics:calculate_lsm]{landscapemetrics::calculate_lsm()}}
 }

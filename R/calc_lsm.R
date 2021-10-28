@@ -1,7 +1,7 @@
 #' @name calc_lsm
 #' @export
 #' @title Calculate with LandscapeMetrics
-#' @param x an output from decouple() decouple.specific() or multiscales()
+#' @param x an output from [decouple()] [decouple.specific()] or [nestedscales()]
 #' @param level Character: "landscape", "class" or "patch"
 #' @param metric Character: one of the metrics in landscapemetrics. See list_lsm()
 #' @param ... any o other parameter from calulate_lsm() in landscapemetrics
@@ -14,7 +14,7 @@
 #' b = c(1000,2000,3000)
 #' x <- decouple(r, p, b)
 #' calc_lsm(x, level = "landscape", "shdi")
-#' @seealso [extract_metrics() ], [decouple() ], [decouple.specific() ],  [multiscales() ] , [landscapemetrics::calculate_lsm() ]
+#' @seealso [extract_metrics()], [decouple()], [decouple.specific()],  [nestedscales()] , [landscapemetrics::calculate_lsm()]
 
 calc_lsm <- function(x, level=NULL, metric=NULL, ...) {
   Reduce(
