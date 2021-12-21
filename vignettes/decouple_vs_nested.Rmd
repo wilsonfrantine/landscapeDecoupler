@@ -1,0 +1,421 @@
+---
+title: "Nested vs Decoupled: model adjustment"
+output:
+  prettydoc::html_pretty:
+    theme: tactile
+    highlight: github
+vignette: >
+  %\VignetteIndexEntry{getting_started}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Nested vs Decoupled scales
+
+In this exercise we will compare some results from two different strategies to access landscape multiscale information:
+
+We will build two objects, `nest.ls` and `dec.ls`, retaining _nested_ and _decoupled_ multiscale rasters, respectivelly.
+
+```{r}
+#if installing is needed:
+#devtools::install_github("wilsonfrantine/landscapeDecoupler")
+library(landscapeDecoupler)
+```
+
+
+## Importing landscape data
+
+We'll first define some objects that will be need to extract landscape information from our raster file.
+
+### Buffers
+
+In this example with euglossini dataset, we'll explore buffers (`b`) from 500 m to 3000 m with a regular interval (but it doesn't have to be) of 500 m; so 500 m, 1000 m, 1500 m, 2000 m, 2500 m and 3000 m.
+
+```{r}
+b <- c(500,1000,1500, 2000, 2500, 3000)
+```
+
+Then we will bring in a raster (`r`) with the whole landscape we will explore in this example
+
+```{r}
+r <- raster(system.file("extdata/raster.grd", package = "landscapeDecoupler"))
+```
+
+Now we can read some sampling sites from a shape file.   
+*IMPORTANT:* It is required you provied a field in shape files called "id" which will be used as unique identifier.
+
+```{r}
+p <- read_points(system.file("extdata/pnts.shp", package = "landscapeDecoupler"), type="shp")
+```
+
+> *Note:* `r` and `p` are both native object in `landscapeDecoupler`, so *you can access* this same data by *typing* `r` or `p` in your console or code. 
+
+To check if everything load properly we can take a look at it.
+
+```{r}
+plot(r)
+points(p, pch=19)
+plot(buffer(p, b[length(b)]), add=T)
+```
+
+## Creating multiscale objects
+
+### Nested landscape
+
+```{r}
+nest.ls <- nestedscales(r, p , b)
+```
+
+Plotting scales for the first site:
+```{r}
+plot_decoupled(nest.ls$p01, rows=2, cols =3, pallete = "viridis")
+```
+
+### Decoupled landscape
+
+```{r}
+dec.ls <- decouple(r, p, b)
+```
+
+plotting
+
+```{r}
+plot_decoupled(dec.ls$p01, rows = 2, cols= 3, pallete ="viridis")
+```
+
+## Calculating metrics
+
+In `landscapeDecouple` it is quite simple to retrive metrics from multiscale objects taking advantage of the package `landscapemetrics` (hereafter `lsm`). Users can use the fucntion `calc_lsm` to apply any metric implemented in `lsm`: 
+
+### Nested
+
+For the nested landscape approache
+
+```{r}
+nest.lsm <- calc_lsm(nest.ls, metric=c("shdi", "pland"))
+tail(nest.lsm)
+```
+
+### Decoupled
+
+For the decoupled approache
+
+```{r}
+dec.lsm <- calc_lsm(dec.ls, metric=c("shdi", "pland"))
+tail(dec.lsm)
+```
+
+## Comparing metrics behaviour
+
+First, let's take a look at how the landscape metrics behave in both multiscale strategies.     
+In order to do so, we will first combine both data frames (`bind_rows()`) to make it easier to plot.
+
+```{r, message=FALSE, prompt=FALSE}
+library("dplyr")
+# Herein I'm using the pipe ( %>% ) operator by importing dplyr library. 
+# If you don't know it, take a look at Rstudio and tydiverse documentation.
+# The pipe make the code easier for humans to read it.
+# you can look at the actions from left to right taking what is happening
+# at left and aplying the function at the right of the pipe operator.
+combined.lsm <- nest.lsm %>% mutate(., strategy="nested") %>%
+  bind_rows(., mutate(dec.lsm, strategy="decoupled")) %>%
+  mutate(.,
+          site     = as.factor(site),
+          layer    = as.factor(layer),
+          level    = as.factor(level),
+          class    = as.factor(class),
+          metric   = as.factor(metric),
+          strategy = factor(strategy, levels = c("nested", "decoupled") )
+         )
+combined.lsm %>% head()
+
+```
+
+Now we can load the ggplot2 and create our firs plot. In this plot, I've filtered the ggplot data by taking only lines with "pland" as metrics in `combined.lsm` dataset.
+We will then compare the mean and standard deviation of the "pland" (proportion of each) across the different scales we have.
+
+```{r, warning=FALSE}
+library(ggplot2)
+
+# To rename the subplots with classes names intead of its values
+class.codes <- system.file("extdata/colors.txt", package = "landscapeDecoupler") %>%
+ read.table( header = T, sep = "\t") %>% 
+  filter(value %in% levels(combined.lsm$class)) %>%
+  pull(name, value)
+
+#Plotting...
+ggplot(
+    data    = combined.lsm %>% 
+               filter(metric=="pland") %>%
+               group_by(strategy),
+    mapping = aes(x=layer, y=value, color=strategy, fill=strategy)
+  )+
+  stat_summary(fun.data = "mean_se", size=0.2)+
+  labs(title="Class cover proportion: Nested Vs Decoupled")+
+  facet_wrap(facets = "class", scales = "free_y", 
+             labeller = as_labeller(class.codes))+
+  theme(
+    axis.text.x = element_text(angle=90)
+  )+
+  scale_fill_manual( values = rep(rgb(1,1,1,0), 2) )
+```
+
+>This picture shows the cumulative percentage of the landscape class coverage throughout the scales. Notice that they all sums to 100% in each scale, so 50 means 50%, 0.6 is equal to 0.6% and so on...
+
+It is interessting to notice that the decouple strategy is more sensitive to metrics variance between scales. The nested strategy, on the other hand, is always smoother. Sinse the "nested approach" acumulate the presence of the class in the previous scales, it will be null or suffer with subtle changes quite rarelly. Whether this property shall be faced as advantage or disadvantage depends on the purpouse and nature of the final analysis.
+
+
+*What about heterogeneity?*
+
+We can also look at a more complex metrics. Heterogeneity in this scope means how "complex" a landscape might be. In this very example we took the landscape shannon index as a proxy of heterogeneity since it consider both presence and proportion of the classess in the landscape.
+
+We can plot it pretty much like in the previous plot, but filtering the `combined.ls` by `metric=="shdi"` .
+```{r}
+ggplot(
+    data    = combined.lsm %>% 
+               filter(metric=="shdi") %>%
+               group_by(layer, strategy),
+    mapping = aes(x=layer, y=value, fill=strategy))+
+  geom_boxplot()+
+  labs(x="scales in meters", y="Shannon Diversity index", title="Heterogeneity throughout scales: Nested Vs Decoupled strategies")
+  
+
+```
+
+As we can see, heterogeneity does not have a clear pathway across the landscapes in any strategy. That is somehow derivated of the multifictorial nature of the metric, which depends on both number and "quantity" of landscape components (classess).
+
+Nonetheless the decoupled strategy seems to bring more variation for this metric as well. It is expected since nested scales will share components and its variances as it progressivelly goes throughout the different scale sizes.
+
+## Multiscale responses
+
+Up to here, we've observed that the different strategies resulted in different measurements for the landscape components. However, is it enough to bring different patterns when analyzing the relationship between metrics and biological variables?
+
+Measuring the relationship between landscape components and biological variables across scales is quite usefull to understanding ecological process. The `multifit` approache is quite streightforward on that and `landscapeDecoupler` has it nativelly implemented. We can make it very quickly with the following pipeline:  
+
+
+### Importing biological data
+
+The `landscapeDecouple` has a native object with an example data called `euglossini`. Users can take a look at it just typing _"euglossini"_ in the console:
+
+```{r}
+euglossini
+```
+
+This dataset compreend some comunity data of "orchid bees" (Apidae: Euglossini; details in [Carneiro et al. 2021](References) ). It has five biogical variables (columns 3 to 7) and 15 sampling sites (rows). In this example we'll look at the first two variables ( _"Richness"_ and _"Abundance"_ ).
+
+>*IMPORTANT*: the _first column_ (*site*) is required for any data you will analyze and *must have* the _same values_ as the *"id"* sampling sites in the *shape file* you used to extract landscape scales. Otherwise, several parts of the code will fail.
+
+### Multifiting
+
+The very first step is to get things together for our model. Therefore, we have to merge the metrics we just extracted (in `nest.lsm` and `dec.lsm` ) with our biodata, `euglossini`. 
+
+The `multifit` function expect a very specific structure in a data frame with sampling sites as rows and "biodata+scales" as columns.
+
+The `lsm_calc()` output as we saw in `nest.lsm` and `dec.lsm` are both long format data, but we can change that with a simple auxiliar function of the package:
+
+```{r}
+## nested strategy
+# heterogeneity
+nest.wide.shdi <- wide.lsm(nest.lsm, level="landscape", metric="shid")
+# forest cover percentage
+nest.wide.fcov <- wide.lsm(nest.lsm, level="class", metric="pland", class=3)
+
+## decouple strategy
+# heterogeneity
+dec.wide.shdi <- wide.lsm(dec.lsm, level="landscape", metric = "shid")
+# forest cover percentage
+dec.wide.fcov <- wide.lsm(dec.lsm, level="class", metric="pland", class=3)
+
+head(dec.wide.fcov)
+```
+This code generates four objects each with wide format table data as expected by the multifit function. Now, we just need to link the biological variables.
+
+#### Connecting metrics and biodata
+
+It is quite simple to connect metrics and biodata with landscapeDecoupler. You can also use your own pipeline to get it done, but we have a very streightforward function for that. The `lsm2multifit` function is able to connect the wide tables with metrics and biodata just as expected by multifit requirements. Again, it is a conviniency for specific examples, but it is pretty flexible and may serves you as well, depending on your needing.
+
+In the example bellow, you will see that we used `lsm2multifit` to connect two metrics and species richness. You just need to set the dataframe with metrics (lsm parameter) and biological response table (biodata). You must also set the response variable to be retrived from biodata (response parameter) and the column that matches the sampling sites in both lsm and biodata tables. In our case it is the "site" column.
+
+To the code:
+
+```{r}
+## Nested
+# Taking Richness as response variable for heterogeneity
+nest.multi.rich.shdi <- lsm2multifit(lsm = nest.wide.shdi, biodata=euglossini, response = "Richness", id.col = "site")
+# Same for forest cover
+nest.multi.rich.fcov <- lsm2multifit(lsm = nest.wide.fcov, biodata=euglossini, response = "Richness", id.col = "site")
+
+## Decoupled
+dec.multi.rich.shdi <- lsm2multifit(lsm = dec.wide.shdi, biodata=euglossini, response = "Richness", id.col = "site")
+# Same for forest cover
+dec.multi.rich.fcov <- lsm2multifit(lsm = dec.wide.fcov, biodata=euglossini, response = "Richness", id.col = "site")
+
+head(dec.multi.rich.fcov)
+```
+
+#### Running multifit
+
+To run multifit now is quite easy. You just have to follow the same as usual. Take a look at the code below:
+
+```{r, eval=FALSE}
+predictors <- names(dec.wide.shdi)[-1]
+multifit( mod = "lm", multief = predictors, data = nest.multi.rich.shdi,
+          formula = Richness ~ multief, xlab = "scales", criterion = "R2")
+```
+
+Quite simple, isn't?
+
+#### Comparing approaches
+
+We have done quite a few things since we started. So lets remind why we got here.    
+
+Our main purpose was to compare two different multiscale strategies ( *_decoupled_* and *_nested_* ) looking at the scale of effect. We retrived two different metrics from landscape using this different approaches. So now we can apply the multifit and compare the R2 and see if they tell us different stories about the data.
+
+##### Richness Vs Heterogeneity
+
+**Nested: Richness Vs Heterogeneity**
+
+```{r, message=FALSE, prompt=FALSE}
+predictors <- names(dec.wide.shdi)[-1]
+multi.nest.het.rich <- multifit( mod = "lm", multief = predictors, 
+                                 data = nest.multi.rich.shdi, 
+                                 formula = Richness ~ multief,
+                                 xlab = "scales", criterion = "R2")
+```
+
+**Decoupled: Richness Vs Heterogeneity**
+
+```{r, message=FALSE, prompt=FALSE}
+multi.dec.het.rich <- multifit( mod = "lm", multief = predictors, 
+                                data = dec.multi.rich.shdi, 
+                                formula = Richness ~ multief,
+                                xlab = "scales", criterion = "R2")
+```
+
+
+As we can see, we may have different interpretations about the scale of effect deppending on which approach we take. In a *nested* approach landscape components will acumulate as we go through the scales (inner to out). Hence, the scale of effect will also acumulate the effect of the previous, as we can see at the first plot. The cumulated effect is then identified at the buffer with 2500 meters.
+
+On the other hand, when we look at the *_decoupled_* approach, we can see the specific response in each actual scale. In such an approach, landscape components do not acumulate as the buffers size "increase", so the metrics, and therefore the relationship between biological response and landscape metrics are relative only to that slice of land. We can see that the metric from the buffer with 1500 meters has a more strong relationship with biological responses than its neighborn scales.
+
+We will not go any further into the discussions about what should means a scale of effect or whether coupled or decoupled approach would better represent any concept of it, but it is interesting to notice how can we lose information overlooking one of these two appraches.
+
+Let's see what happens for a different landscape atribute variable, the forest coverage...
+
+##### Richness Vs Forest Coverage
+
+**Nested approach:**
+
+```{r, message=FALSE, prompt=FALSE}
+predictors <- names(dec.wide.shdi)[-1]
+multi.nest.fcov.rich <- multifit( mod = "lm", multief = predictors, 
+                                 data = nest.multi.rich.fcov, 
+                                 formula = Richness ~ multief,
+                                 xlab = "scales", criterion = "R2")
+```
+
+
+**Decoupled approach:**
+
+```{r, message=FALSE, prompt=FALSE}
+multi.dec.fcov.rich <- multifit( mod = "lm", multief = predictors, 
+                                data = dec.multi.rich.fcov, 
+                                formula = Richness ~ multief,
+                                xlab = "scales", criterion = "R2")
+```
+
+As we can see Richness and Forest Cover do not seem to have a very strong relationship since R2 is quite close to 0 in both approaches. Nonethelles, the **decoupled** approach seems to be a bit more sensitive, as we can see by the higher R2 levels and the subtle change in R2 variation through scale against the smooth one in the **nested** approach. 
+
+Moreover, while X2000 and X2500 seem to be less important in the nested strategy, the decoupled strategy display a more prominent e equal response for the larger scales. That is because the very nature of the **nested** strategy, wherein the residual effect of the previous smaller scale noises the effect next one. As we can see, in this case the heterogeneity has no relationship with abundance in the smaller scales, but this change in the larger ones. Since nested approach acumulate the landscape components from the smaller ones this lack of relationship is also inherited from the larger scales. This effect is always expect regardless of the strenght or direction of the relationship.
+
+#### Abundance VS Heterogeneity
+
+We can now take a closer look at a different biological variable, the abundance.
+
+Let's prepare the data sets:
+```{r}
+## Nested
+# Taking Abundance as response variable for heterogeneity
+nest.multi.abund.shdi <- lsm2multifit(lsm = nest.wide.shdi, biodata=euglossini, response = "Abundance", id.col = "site")
+# Same for forest cover
+nest.multi.abund.fcov <- lsm2multifit(lsm = nest.wide.fcov, biodata=euglossini, response = "Abundance", id.col = "site")
+
+## Decoupled
+dec.multi.abund.shdi <- lsm2multifit(lsm = dec.wide.shdi, biodata=euglossini, response = "Abundance", id.col = "site")
+# Same for forest cover
+dec.multi.abund.fcov <- lsm2multifit(lsm = dec.wide.fcov, biodata=euglossini, response = "Abundance", id.col = "site")
+
+head(dec.multi.abund.fcov)
+```
+
+Now to the model comparisons in both *_nested_* and *_decoupled_* approaches:
+
+**Nested: Abundance VS Heterogeneity**
+
+```{r}
+predictors <- names(dec.wide.shdi)[-1]
+multi.nest.het.abund <- multifit( mod = "lm", multief = predictors, 
+                                 data = nest.multi.abund.shdi, 
+                                 formula = Abundance ~ multief,
+                                 xlab = "scales", criterion = "R2")
+```
+
+**Decoupled: Abundance VS Heterogeneity**
+
+```{r}
+multi.dec.het.abund <- multifit( mod = "lm", multief = predictors, 
+                                data = dec.multi.abund.shdi, 
+                                formula = Abundance ~ multief,
+                                xlab = "scales", criterion = "R2")
+```
+
+In this comparison we don't see much since heterogeneity usually explain less than 10% of euglossini abundance in this dataset. We must bear in mind that we tested no requirements of linear models and all comparisons are just illustratives. We are not looking at the best models, only the trend between two strategies over the same dataset.
+
+Nonethelles, we can see the same noisy effect as we described for Richness VS Forest Cover above.
+
+#### Abundance Vs Forest Cover
+
+Lets see if the same happens for Abundance VS Forest Cover:
+
+**Nested: Abundance VS Forest Cover**
+
+```{r}
+predictors <- names(dec.wide.shdi)[-1]
+multi.nest.fcov.abund <- multifit( mod = "lm", multief = predictors, 
+                                 data = nest.multi.abund.fcov, 
+                                 formula = Abundance ~ multief,
+                                 xlab = "scales", criterion = "R2")
+```
+
+**Decoupled: Abundance VS Forest Cover**
+
+```{r}
+multi.dec.fcov.abund <- multifit( mod = "lm", multief = predictors, 
+                                data = dec.multi.abund.fcov, 
+                                formula = Abundance ~ multief,
+                                xlab = "scales", criterion = "R2")
+```
+
+Now we have something more interesting. Here we can see that both approaches identified the same scale of effect through the landscape analyzed. Nonethelles, we must highlight two important questions. At first, the shape of the R2 curves are quite different. Although both strategies detected X2000 as the peak of the R2 curve, we can clearerly detect the decay after X2000 in the *_decoupled_* while in the *_nested_* strategy it seems to be more as a plato after X2000. Depending on the ecological question or study purpose, we may loose important information by considering only the *_nested_* approach.
+
+
+## Conclusions
+
+As we just saw, it is quite a bit risky to get commited with a single strategy. While the *_nested_* approach has the advantage to never get a zero metrics (if it exist in the analyzed landscape) its nested nature make the responses equally smooth and may end on an overlook of some important features of the data. On the other hand, the *_decoupled_* strategy is quite sensitive to detect the scale of effect, but might be deceivable to look at only this single approach since in nature things work together.
+
+There is no silver bullets, but the *_decoupled_* approach is able to give us a level of detail that the *_nested_* approach cannot. We must always consider our objectives and questions and decide which one might be better. I encorage you to look at both as always as possible.
+
+I hope you find this helpfull.
+
+Cheers.
+
+-----------
+Dr. Wilson Frantine-Silva
+-----------
+
+## References
+
+_Lázaro Carneiro, Milton C. Ribeiro, Willian M. Aguiar, Camila Priante, Wilson Frantine-Silva, Maria C. Gaglianone_    
+[Bee responses to landscape composition on coupled and decoupled multiscale approaches](http://doi.org/10.21203/rs.3.rs-750143/v1) - Pre-print.
+
+_Lázaro Carneiro, Willian M. Aguiar, Camila Priante, Milton C. Ribeiro, Wilson Frantine-Silva, Maria C. Gaglianone_    
+[The Interplay Between Thematic Resolution, Forest Cover, and Heterogeneity for Explaining Euglossini Bees Community in an Agricultural Landscape](http://dx.doi.org/10.3389/fevo.2021.628319). _Front Eco Evol 2021_

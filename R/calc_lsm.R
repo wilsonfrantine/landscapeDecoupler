@@ -5,7 +5,7 @@
 #' @param level Character: "landscape", "class" or "patch"
 #' @param metric Character: one of the metrics in landscapemetrics. See list_lsm()
 #' @param ... any o other parameter from calulate_lsm() in landscapemetrics
-#' @description this function return a long format data frame by reshaping a calling of calculate_lsm from landscapeMetrics
+#' @description This function calculate any metrics in LandscapeMetrics from landscapes returned from decouple(), specific.decouple() or nestedscales().
 #' @examples
 #' #don't need to run this
 #' r <- raster(system.file("extdata/raster.grd", package="landscapeDecoupler"))

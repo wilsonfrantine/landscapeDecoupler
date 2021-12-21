@@ -27,40 +27,14 @@
 #'          formula = Abundance ~ multief, data = d2multi,
 #'          criterion = "R2", plot_est = FALSE)
 
-lsm2multifit <- function(biodata=NULL, lsmdata=NULL, level=NULL, bio.id = NULL, which.class=NULL){
-  # verifications
-  if(is.null(biodata)) stop("biodata is NULL, but it is required")
-  if(is.null(lsmdata)) stop("lsmdata is NULL, but it is required")
-  if(is.null(level)){
-    level <- "landscape"
-    warning("`level` is NULL, it will be taken as 'landscape'")
+lsm2multifit <- function(lsm=NULL, biodata=NULL, response=NULL, id.col="site"){
+  if(is.null(response)) stop("you must give some response variable to retain")
+  if(is.null(lsm)) stop("you must provide a landscape metrics dataframe. \n See call_lsm for details")
+  if(is.null(biodata)) stop("you must provide a dataframe with biological data. \n See euglossini object for an example")
+  if(!is.null(id.col)) {
+    if(!id.col %in% names(lsm)) stop(paste0("the id.col: '",id.col,"' was not found in lsm column names:"))
+    if(!id.col %in% names(biodata)) stop(paste0("the id.col: '", id.col, "' was not found in biodata column names"))
   }
-  if(is.null(bio.id)){
-    bio.id <- names(biodata)[1]
-    warning("`bio.id` is NULL: `biodata` first column was taken")
-  }
-  if(level=="landscape"){
-    if("landscape" %in% lsmdata$level){
-      temp <- reshape(lsmdata, idvar = bio.id, v.names = "value",
-                      timevar = "layer", direction = "wide",
-                      times = unique(lsmdata$layer),
-                      drop = c("class", "level", "metric","id"))
-      names(temp) <- gsub("value.","",names(temp))
-      merged <- merge(biodata, temp)
-      return(merged)
-    }else{stop("it seems that the level in your lsmdata table is not `landscape` as you entered. Please, check it out.")}
-  }else if(level=="class"){
-    if(is.null(which.class)){
-      stop(" `which.class` is needed but not provided")
-    }else if(which.class %in% lsmdata$class){
-      lsmdata <- subset(lsmdata, subset = lsmdata$class %in% which.class)
-      temp <- reshape(lsmdata, idvar = bio.id, v.names = "value",
-                      timevar = "layer", direction = "wide",
-                      times = unique(lsmdata$layer),
-                      drop = c("class", "level", "metric","id"))
-      names(temp) <- gsub("value.","",names(temp))
-      merged <- merge(biodata, temp)
-      return(merged)
-    }
-  }else {stop("`level` must be one of `landscape` or `class`")}
+    out <- biodata[,c(all_of(id.col),response)] %>% full_join(lsm, by = id.col)
+    return(out)
 }

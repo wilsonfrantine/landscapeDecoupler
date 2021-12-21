@@ -8,6 +8,46 @@
 
 # Functions ####
 ## Deprecated Functions ####
+
+# lsm2multifit <- function(biodata=NULL, lsmdata=NULL, bio.id = NULL, which.class=NULL){
+#  # verifications
+#  if(is.null(biodata)) stop("biodata is NULL, but it is required")
+#  if(is.null(lsmdata)) stop("lsmdata is NULL, but it is required")
+#  if(is.null(level)){
+#    level <- "landscape"
+#    warning("`level` is NULL, it will be taken as 'landscape'")
+#  }
+#  if(is.null(bio.id)){
+#    bio.id <- names(biodata)[1]
+#    warning("`bio.id` is NULL: `biodata` first column was taken")
+#  }
+#  if(level=="landscape"){
+#    if("landscape" %in% lsmdata$level){
+#      temp <- reshape(lsmdata, idvar = bio.id, v.names = "value",
+#                      timevar = "layer", direction = "wide",
+#                      times = unique(lsmdata$layer),
+#                      drop = c("class", "level", "metric","id"))
+#      names(temp) <- gsub("value.","",names(temp))
+#      merged <- merge(biodata, temp)
+#      return(merged)
+#    }else{stop("it seems that the level in your lsmdata table is not `landscape` as you entered. Please, #check it out.")}
+#  }else if(level=="class"){
+#    if(is.null(which.class)){
+#      stop(" `which.class` is needed but not provided")
+#    }else if(which.class %in% lsmdata$class){
+#      lsmdata <- subset(lsmdata, subset = lsmdata$class %in% which.class)
+#      temp <- reshape(lsmdata, idvar = bio.id, v.names = "value",
+#                      timevar = "layer", direction = "wide",
+#                      times = unique(lsmdata$layer),
+#                      drop = c("class", "level", "metric","id"))
+#      names(temp) <- gsub("value.","",names(temp))
+#      merged <- merge(biodata, temp)
+#      return(merged)
+#    }
+#  }else {stop("`level` must be one of `landscape` or `class`")}
+#}
+
+
 #' @name return_specifics
 #' @noRd
 #' @keywords internal

@@ -4,13 +4,7 @@
 \alias{lsm2multifit}
 \title{Convert landscapeMetrics to Multifit format}
 \usage{
-lsm2multifit(
-  biodata = NULL,
-  lsmdata = NULL,
-  level = NULL,
-  bio.id = NULL,
-  which.class = NULL
-)
+lsm2multifit(lsm = NULL, biodata = NULL, response = NULL, id.col = "site")
 }
 \arguments{
 \item{biodata}{a dataframe with response variables}
