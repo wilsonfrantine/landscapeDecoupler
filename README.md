@@ -20,9 +20,11 @@ install_github("wilsonfrantine/landscapeDecoupler", vignettes=TRUE)
 
 ## How to use it
 
+### Getting started
 For the first time, you might find helpful to follow <a href="https://wilsonfrantine.github.io/landscapeDecoupler/"> <b>this vignette. </b> </a>
 
-If you wanna see how to use **regressions with multifit** function and a simple comparison between **Nested** and **Decoupled** approaches, see <a href="https://wilsonfrantine.github.io/landscapeDecoupler/Nested_vs_Decoupled.html"> this vignette </b> </a>
+### Multifiting / Nested vs Decoupled
+How to use **multifit** or **Nested vs Decoupled** approaches, see <a href="https://wilsonfrantine.github.io/landscapeDecoupler/Nested_vs_Decoupled.html"> <b> this vignette </b> </a>
 
 Their you will find more information about the pacakge and how to use it.
 
