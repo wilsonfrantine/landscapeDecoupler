@@ -4,10 +4,12 @@
 \alias{predicor}
 \title{Predictor correllation throught scales}
 \usage{
-predicor(cor.data)
+predicor(x)
 }
 \arguments{
-\item{x}{a dataframe generated with the functions \link{calc_lsm} and tranformed with \code{\link[=lsm2wide]{lsm2wide()}} function}
+\item{x}{a dataframe generated with the functions \link{calc_lsm} and tranformed with \code{\link[=lsm2multifit]{lsm2multifit()}} function}
+
+\item{...}{other parameters to be passed for the stats::cor function}
 }
 \value{
 A data frame containing the correlation values between scales
@@ -28,12 +30,17 @@ nest.lsm <- calc_lsm(nest.ls, metric = "pland")
 dec.lsm  <- calc_lsm(dec.ls,  metric = "pland")
 
 #Comparing correlation for the class = 3
-nestcor <- predicor(lsm2wide(nest.lsm, 3))
-deccor  <- predicor(lsm2wide(dec.lsm,  3))
+nestcor <- predicor(lsm2multifit(nest.lsm, level="class", class=3,
+ metrics="pland"))
+deccor  <- predicor(lsm2multifit(dec.lsm, level="class", class=3,
+ metrics="pland"))
 
 corcomp    <- data.frame(
-  strategy    = factor(c(rep("nested", nrow(nestcor)), rep("decoupled", nrow(deccor))), levels = c("nested","decoupled")),
-  scales      = factor(c(nestcor$scales, deccor$scales), levels=nestcor$scales),
+  strategy    = factor(c(rep("nested", nrow(nestcor)),
+                  rep("decoupled", nrow(deccor))),
+                  levels = c("nested","decoupled")),
+  scales      = factor(c(nestcor$scales, deccor$scales),
+                  levels=nestcor$scales),
   correlation = c(nestcor$correlation, deccor$correlation)
 )
 library(ggplot2)
@@ -45,8 +52,8 @@ ggplot(corcomp, aes(x=scales, y=correlation, fill=strategy))+
 nest.lsm <- calc_lsm(nest.ls, metric = "shdi")
 dec.lsm  <- calc_lsm(dec.ls,  metric = "shdi")
 
-nestcor <- predicor(lsm2wide(nest.lsm))
-deccor  <- predicor(lsm2wide(dec.lsm ))
+nestcor <- predicor(lsm2multifit(nest.lsm, level="landscape", metrics="shdi"))
+deccor  <- predicor(lsm2multifit(dec.lsm, level="landscape", metrics="shdi"))
 
 corcomp    <- data.frame(
   strategy    = factor(c(rep("nested", nrow(nestcor)), rep("decoupled", nrow(deccor))), levels = c("nested","decoupled")),

@@ -1,5 +1,4 @@
 #' @title Extract metrics
-#' @export
 #' @name extract_metrics
 #' @export extract_metrics
 #' @param x a list from the decouple function

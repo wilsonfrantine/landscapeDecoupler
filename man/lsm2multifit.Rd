@@ -4,37 +4,50 @@
 \alias{lsm2multifit}
 \title{Convert landscapeMetrics to Multifit format}
 \usage{
-lsm2multifit(lsm = NULL, biodata = NULL, response = NULL, id.col = "site")
+lsm2multifit(
+  lsm,
+  biodata = NULL,
+  level = NULL,
+  metrics = NULL,
+  class = NULL,
+  id.col = "site"
+)
 }
 \arguments{
-\item{biodata}{a dataframe with response variables}
+\item{lsm}{a data frame from \code{\link[=calc_lsm]{calc_lsm()}}}
 
-\item{lsmdata}{a dataframe with landscape metrics as \code{\link[=calc_lsm]{calc_lsm()}} output}
+\item{biodata}{a dataframe with response variables; see euglossini example data frame}
 
-\item{level}{a character indicating the metrics level is "landscape" or "class"}
+\item{level}{The level to extract the metric; must be "landscape" or "class".}
 
-\item{bio.id}{the column of the biodata that has the site id as the \code{\link[=calc_lsm]{calc_lsm()}} output}
+\item{metrics}{The metric to be extracted from \code{\link[=calc_lsm]{calc_lsm()}} output table}
 
-\item{which.class}{A character. If level is equal to "class", then the user must indicate which class will be extracted. Otherwise, the function will fail.}
+\item{class}{The class to extract the value if level is "class"}
+
+\item{id.col}{the column of the biodata that has the site id as the \code{\link[=calc_lsm]{calc_lsm()}} output; "site" is default value}
+}
+\value{
+a data frame in wide format with a single value of a given metrics for each scale
 }
 \description{
-this function was designed to merge outputs from \code{\link[=calc_lsm]{calc_lsm()}} and biological data to be used as reponse variables in \code{\link[=multifit]{multifit()}} function. The function expect a single metric for each site which must have the same
+this function was designed to shape the data as expected by \code{\link[=multifit]{multifit()}}, merging the outputs from \code{\link[=calc_lsm]{calc_lsm()}} and some biological data to be used as reponse variables.
 }
 \examples{
 #For "landscape" level metrics
 lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "landscape", metric = "shdi")
-biodata <- euglossini
-d2multi <- lsm2multifit(biodata, lsmdata, "landscape", bio.id="site")
+d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="landscape", metric="shdi")
 head(d2multi)
-multifit(mod = "lm", multief = colnames(d2multi)[grepl("X", colnames(d2multi))],
+scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
+multifit(mod = "lm", multief = scales,
        formula = Abundance ~ multief, data = d2multi,
        criterion = "R2", plot_est = FALSE)
 
 #For "class" level metrics
 lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "class", metric = "pland")
 biodata <- euglossini
-d2multi <- lsm2multifit(biodata, lsmdata, "class", which.class = 3)
+d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="class", class=3, metric="shdi")
 head(d2multi)
+#' scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
 multifit(mod = "lm", multief = colnames(d2multi)[grepl("X", colnames(d2multi))],
          formula = Abundance ~ multief, data = d2multi,
          criterion = "R2", plot_est = FALSE)
