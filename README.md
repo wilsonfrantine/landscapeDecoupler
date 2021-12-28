@@ -28,7 +28,7 @@ How to use **multifit** or **Nested vs Decoupled** approaches, see <a href="http
 
 ## Paralellal computation
 
-Based on our test so far, parallelization has not been returned signficativelly faster runs. However, you might want to run some really large dataset in parallel strategies. The package is prepared to paralellization with future framework. We've still working on that because we still having some overhead issues. Nonetheless, you might try it out on your own machine/cluster by using any strategy available in _future_ framework.
+Based on our tests so far, parallelization has not returned significatively faster runs. However, you might want to run some large dataset in parallel strategies. The package is prepared to parallelization with the **future's** framework. We've still working on that because we still having some overhead issues. Nonetheless, you might try it out on your own machine/cluster by using any strategy available on the **future's** framework. 
 
 ```{r}
 library("landscapeDecoupler")
