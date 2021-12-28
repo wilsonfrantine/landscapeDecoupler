@@ -26,8 +26,6 @@ For the first time, you might find helpful to follow <a href="https://wilsonfran
 ### Multifiting / Nested vs Decoupled
 How to use **multifit** or **Nested vs Decoupled** approaches, see <a href="https://wilsonfrantine.github.io/landscapeDecoupler/Nested_vs_Decoupled.html"> <b> this vignette </b> </a>
 
-Their you will find more information about the pacakge and how to use it.
-
 ## Paralellal computation
 
 Based on our test so far, parallelization has not been returned signficativelly faster runs. However, you might want to run some really large dataset in parallel strategies. The package is prepared to paralellization with future framework. We've still working on that because we still having some overhead issues. Nonetheless, you might try it out on your own machine/cluster by using any strategy available in _future_ framework.
