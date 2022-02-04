@@ -12,5 +12,17 @@ extract_metrics(x = NULL, countNA = NULL)
 \item{countNA}{whether to count NA values. If it is "no" (the default) the proportion of each class in the raster layer will be calculated by the sum of valid values. Otherwise, it will be proportional to the whole raster sizes. The allowed values correspond to never count ("no"), only if the count is positive ("ifany") and even for zero counts ("always"). There are some "phatological" cases in which two different kinds of NAs will be treated differently. See the rbase table function for details.}
 }
 \description{
-Extract metrics
+This function is a shortcut for calculating some common metrics from multiscale objects as
+returned from decouple, nestedscales or specificdecouple functions. The function calculates:
+'counts': pixels counts for n classes in each scale. Class level metric.
+'heterog': heterogeneity as Shannon diversity index for each scale. Class level metric.
+'n_class': number of classes in a given scale. Landscape level metric.
+'percent': class percentage coverage. Class level metric.
+}
+\examples{
+\dontrun{
+ls <- decouple(r,p,b=c(1000,2000,3000))
+lsm <- extract_metrics(ls)
+head(lsm)
+}
 }

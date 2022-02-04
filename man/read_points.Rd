@@ -28,9 +28,11 @@ The name of the field containing sites longitude coordinates}
 read georeferenced points
 }
 \examples{
+\dontrun{
 points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 p <- read_points(points.file,type="shp")
 plot(landscapeDecoupler::r)
 plot(p, add=TRUE)
 text(p, labels=p$id)
+}
 }

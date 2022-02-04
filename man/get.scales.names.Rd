@@ -13,9 +13,11 @@ get.scales.names(x)
 this function grab the names of the scales to be used as predictos in multifit function or any other.
 }
 \examples{
+\dontrun{
 dec        <- decouple(r,p,c(1000,2000,3000))
 lsmdata    <- calc_lsm(dec, level = "landscape", metric = "shdi")
 data.mfit  <- lsm2multifit(lsmdata, biodata=euglossini,
                            level = "landscape", metrics="shdi")
 get.scales.names(data.mfit)
+}
 }

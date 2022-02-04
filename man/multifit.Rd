@@ -92,6 +92,18 @@ Note:
 
 So far, multifit can only be applied for univariate multi-effects only (i.e. with a unique landscape attribute). Additionally, multifit has been tested in fitting models of the packages stats (“lm” and “glm”; R Core Team 2017), lme4 (“lmer” and “glmer”; Bates et al. 2015) glmmadmb (“glmmADMB”; Fournier et al. 2012), glmmTMB (“glmmTMB”; Magnusson et al. 2017), nlme (“lme”; Pinheiro et al. 2018) and pscl (“zeroinfl” and “hurdle”; Zeileis et al. 2008). Nevertheless, the function should work with other models and packages, and will be updated in the future.
 }
+\examples{
+\dontrun{
+library(landscapeDecoupler)
+ls <- decouple(r,p,c(1000,2000,3000))
+lsm <- calc_lsm(ls, c("pland","shdi"))
+m.data <- lsm2multifit(lsm = lsm, biodata = euglossini, level = "landscape", metrics = "shdi")
+multifit("lm", multief=get.scales.names(m.data), data = m.data, formula = "Abundance ~ multief")
+}
+}
+\seealso{
+\code{\link[=fitscales]{fitscales()}} \code{\link[=lsm2multifit]{lsm2multifit()}} \code{\link[=get.scales.names]{get.scales.names()}}
+}
 \author{
 Pablo Ayar Huais – phuais\@gmail.com
 }

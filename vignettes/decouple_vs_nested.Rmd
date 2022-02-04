@@ -20,6 +20,7 @@ We will build two objects, `nest.ls` and `dec.ls`, retaining _nested_ and _decou
 #if installing is needed:
 #devtools::install_github("wilsonfrantine/landscapeDecoupler")
 library(landscapeDecoupler)
+library(raster)
 ```
 
 
@@ -71,7 +72,7 @@ nest.ls <- nestedscales(r, p , b)
 
 Plotting scales for the first site:
 ```{r}
-plot_decoupled(nest.ls$p01, rows=2, cols =3, pallete = "viridis")
+multiplot(nest.ls, pallete = "viridis")
 ```
 
 ### Decoupled landscape
@@ -83,7 +84,7 @@ dec.ls <- decouple(r, p, b)
 plotting
 
 ```{r}
-plot_decoupled(dec.ls$p01, rows = 2, cols= 3, pallete ="viridis")
+multiplot(dec.ls$p01, pallete ="viridis")
 ```
 
 ## Calculating metrics

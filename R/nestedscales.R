@@ -6,16 +6,18 @@
 #' @param r a raster object. Raster must be projected to an UTM system, otherwise, buffer sizes will be given in map units.
 #' @param p a set of sampling sites (SpatialPointsDataFrame, SpatialPoints simple_features) points from where buffers will be calculated.
 #' @param b a vector of buffer sizes (radii in meters) to be calculated. If a single value is provided the function returns a simple buffer cut.
-#' @seealso [decouple()] [decouple.specific()]
+#' @seealso [decouple()] [decouple.specific()] [calc_lsm()] [multiplot]
 #' @usage nestedscales(r,p,b)
 #' @examples
+#' \dontrun{
 #' path.to.your.raster <- system.file("extdata/raster.grd", package="landscapeDecoupler")
 #' path.to.your.sampling.points <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 #' r <- raster(path.to.your.raster)
 #' p <- read_points(path.to.your.sampling.points, type="shp")
 #' b <- c(1000,2000,3000)
 #' your.nested.scales <- nestedscales(r,p,b)
-#' plot(your.nested.scales$p02)
+#' multiplot(your.nested.scales$p02)
+#' }
 nestedscales <- function(r, p, b){
   res <- future_lapply(lbuffers(p,b), function(x){
       ext     <- extent(do.call(rbind, x))
@@ -24,6 +26,6 @@ nestedscales <- function(r, p, b){
       rbrick  <- raster::brick(rlist)
       names(rbrick) <- unlist(lapply(x, function(i) i$id))
       return(rbrick)
-    })
+    }, future.seed = 1234)
   return(res)
 }

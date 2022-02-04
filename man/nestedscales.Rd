@@ -17,16 +17,18 @@ nestedscales(r,p,b)
 This function crops out buffers from a landscape ginven a raster file ( \emph{r} ), one or more sampling sites ( \emph{p} ) and radii sizes ( \emph{b} ). The function returns a list with one raster files for each sampling site and one RasterBricks layer for each provided buffer size.
 }
 \examples{
+\dontrun{
 path.to.your.raster <- system.file("extdata/raster.grd", package="landscapeDecoupler")
 path.to.your.sampling.points <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 r <- raster(path.to.your.raster)
 p <- read_points(path.to.your.sampling.points, type="shp")
 b <- c(1000,2000,3000)
 your.nested.scales <- nestedscales(r,p,b)
-plot(your.nested.scales$p02)
+multiplot(your.nested.scales$p02)
+}
 }
 \seealso{
-\code{\link[=decouple]{decouple()}} \code{\link[=decouple.specific]{decouple.specific()}}
+\code{\link[=decouple]{decouple()}} \code{\link[=decouple.specific]{decouple.specific()}} \code{\link[=calc_lsm]{calc_lsm()}} \link{multiplot}
 }
 \author{
 Wilson Frantine-Silva

@@ -33,9 +33,11 @@ a data frame in wide format with a single value of a given metrics for each scal
 this function was designed to shape the data as expected by \code{\link[=multifit]{multifit()}}, merging the outputs from \code{\link[=calc_lsm]{calc_lsm()}} and some biological data to be used as reponse variables.
 }
 \examples{
+\dontrun{
 #For "landscape" level metrics
-lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "landscape", metric = "shdi")
-d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="landscape", metric="shdi")
+lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), metric = "shdi")
+d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini,
+level="landscape", metrics ="shdi")
 head(d2multi)
 scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
 multifit(mod = "lm", multief = scales,
@@ -45,12 +47,13 @@ multifit(mod = "lm", multief = scales,
 #For "class" level metrics
 lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "class", metric = "pland")
 biodata <- euglossini
-d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="class", class=3, metric="shdi")
+d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="class", class=3, metrics ="shdi")
 head(d2multi)
 #' scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
 multifit(mod = "lm", multief = colnames(d2multi)[grepl("X", colnames(d2multi))],
          formula = Abundance ~ multief, data = d2multi,
          criterion = "R2", plot_est = FALSE)
+}
 }
 \author{
 Wilson Frantine-Silva

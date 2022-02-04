@@ -5,10 +5,12 @@
 #' @param ls an output of [decouple()] or [nestedscales()] functions
 #' @param specific which scales will be kept independent of the others. If you have a three layer object from the decouple or nestedscale functions, then specific can be 1, 2, 3 or any combination of it as c(1,2) or c(2,3). Using all scales in the ls object will return the same object.
 #' @examples
+#' \dontrun{
 #' decoupled.ls <- decouple(r,p, c(500,1000,2000,3000))
 #' spec  <- decouple.specific(decoupled.ls, c(1,3))
 #' plot(decoupled.ls$p02)
 #' plot(spec$p02)
+#' }
 #' @seealso [decouple()], [nestedscales()]
 
 decouple.specific <- function(ls=NULL, specific=NULL){
@@ -22,7 +24,7 @@ decouple.specific <- function(ls=NULL, specific=NULL){
     )
     names(rstack) <- c(names(rstack)[-length(names(rstack))],"merged_scales")
     return(rstack)
-  })
+  }, future.seed = 1234)
   names(spec) <- names(ls)
   return(spec)
 }

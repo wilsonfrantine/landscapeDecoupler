@@ -15,10 +15,12 @@ decouple.specific(ls = NULL, specific = NULL)
 This function extract specific scales as  given a multilayer raster object
 }
 \examples{
+\dontrun{
 decoupled.ls <- decouple(r,p, c(500,1000,2000,3000))
 spec  <- decouple.specific(decoupled.ls, c(1,3))
 plot(decoupled.ls$p02)
 plot(spec$p02)
+}
 }
 \seealso{
 \code{\link[=decouple]{decouple()}}, \code{\link[=nestedscales]{nestedscales()}}

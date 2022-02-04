@@ -49,6 +49,15 @@
 #' Note:
 #'
 #' So far, multifit can only be applied for univariate multi-effects only (i.e. with a unique landscape attribute). Additionally, multifit has been tested in fitting models of the packages stats (“lm” and “glm”; R Core Team 2017), lme4 (“lmer” and “glmer”; Bates et al. 2015) glmmadmb (“glmmADMB”; Fournier et al. 2012), glmmTMB (“glmmTMB”; Magnusson et al. 2017), nlme (“lme”; Pinheiro et al. 2018) and pscl (“zeroinfl” and “hurdle”; Zeileis et al. 2008). Nevertheless, the function should work with other models and packages, and will be updated in the future.
+#' @examples
+#' \dontrun{
+#' library(landscapeDecoupler)
+#' ls <- decouple(r,p,c(1000,2000,3000))
+#' lsm <- calc_lsm(ls, c("pland","shdi"))
+#' m.data <- lsm2multifit(lsm = lsm, biodata = euglossini, level = "landscape", metrics = "shdi")
+#' multifit("lm", multief=get.scales.names(m.data), data = m.data, formula = "Abundance ~ multief")
+#' }
+#' @seealso [fitscales()] [lsm2multifit()] [get.scales.names()]
 
 multifit <- function(mod, multief, data, formula = NULL, args = NULL, criterion = "AIC", site_id = NULL,
                      signif = TRUE, alpha = 0.05, return.plot = T, plot_est = FALSE, print_sum = FALSE,
@@ -385,11 +394,11 @@ running <- function(expr){
   return(out)
 }
 warn_handler <- function(w) {
-  warns <<- c(warns, list(w))
+  warns <- c(warns, list(w))
   invokeRestart("muffleWarning")
 }
 mess_handler <- function(m) {
-  mess <<- c(mess, list(m))
+  mess <- c(mess, list(m))
   NULL
 }
 

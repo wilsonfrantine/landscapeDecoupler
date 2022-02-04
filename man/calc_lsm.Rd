@@ -4,28 +4,31 @@
 \alias{calc_lsm}
 \title{Calculate with LandscapeMetrics}
 \usage{
-calc_lsm(x, level = NULL, metric = NULL, ...)
+calc_lsm(x, metric = NULL, level = NULL, ...)
 }
 \arguments{
 \item{x}{an output from \code{\link[=decouple]{decouple()}} \code{\link[=decouple.specific]{decouple.specific()}} or \code{\link[=nestedscales]{nestedscales()}}}
 
-\item{level}{Character: "landscape", "class" or "patch"}
-
 \item{metric}{Character: one of the metrics in landscapemetrics. See list_lsm()}
 
-\item{...}{any o other parameter from calulate_lsm() in landscapemetrics}
+\item{level}{Character: "landscape", "class" or "patch". Optional.}
+
+\item{...}{any other parameter from calulate_lsm() in landscapemetrics}
 }
 \description{
-This function calculate any metrics in LandscapeMetrics from landscapes returned from decouple(), specific.decouple() or nestedscales().
+This function calculates any metrics implemented in landscapemetrics package
+using objects returned from \code{\link[=decouple]{decouple()}}, \code{\link[=decouple.specific]{decouple.specific()}} or \code{\link[=nestedscales]{nestedscales()}}.
 }
 \examples{
-#don't need to run this
+\dontrun{
+#You don't need to run the next two lines
 r <- raster(system.file("extdata/raster.grd", package="landscapeDecoupler"))
 p <- read_points(system.file("extdata/pnts.shp", package="landscapeDecoupler"), type="shp")
 #setting buffers sizes
 b = c(1000,2000,3000)
 x <- decouple(r, p, b)
 calc_lsm(x, level = "landscape", "shdi")
+}
 }
 \seealso{
 \code{\link[=extract_metrics]{extract_metrics()}}, \code{\link[=decouple]{decouple()}}, \code{\link[=decouple.specific]{decouple.specific()}},  \code{\link[=nestedscales]{nestedscales()}} , \code{\link[landscapemetrics:calculate_lsm]{landscapemetrics::calculate_lsm()}}

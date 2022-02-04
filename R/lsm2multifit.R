@@ -11,9 +11,11 @@
 #' @param id.col the column of the biodata that has the site id as the [calc_lsm()] output; "site" is default value
 #' @return a data frame in wide format with a single value of a given metrics for each scale
 #' @examples
+#' \dontrun{
 #' #For "landscape" level metrics
-#' lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "landscape", metric = "shdi")
-#' d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="landscape", metric="shdi")
+#' lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), metric = "shdi")
+#' d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini,
+#' level="landscape", metrics ="shdi")
 #' head(d2multi)
 #' scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
 #' multifit(mod = "lm", multief = scales,
@@ -23,12 +25,13 @@
 #' #For "class" level metrics
 #' lsmdata <- calc_lsm(decouple(r,p,c(1000,2000,3000)), level = "class", metric = "pland")
 #' biodata <- euglossini
-#' d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="class", class=3, metric="shdi")
+#' d2multi <- lsm2multifit(lsm = lsmdata, biodata=euglossini, level="class", class=3, metrics ="shdi")
 #' head(d2multi)
 #' #' scales <- colnames(d2multi)[grepl("X", colnames(d2multi))]
 #' multifit(mod = "lm", multief = colnames(d2multi)[grepl("X", colnames(d2multi))],
 #'          formula = Abundance ~ multief, data = d2multi,
 #'          criterion = "R2", plot_est = FALSE)
+#'}
 
 lsm2multifit <- function(lsm, biodata=NULL, level=NULL, metrics=NULL, class=NULL, id.col="site"){
   wide.ls.level <- function(lsm, metrics, id.col=id.col){
@@ -37,7 +40,7 @@ lsm2multifit <- function(lsm, biodata=NULL, level=NULL, metrics=NULL, class=NULL
       metrics <- unique(lsm$metric)[1]
       warning(paste0("No metric given. First taken: '",metrics,"'"))
     }
-    temp <- temp %>% dplyr::filter(metric==metrics) %>%
+    temp <- temp %>% dplyr::filter( .data$metric == metrics) %>%
       tidyr::pivot_wider(id_cols = dplyr::all_of(id.col),
                          names_from = "layer",
                          values_from = "value")

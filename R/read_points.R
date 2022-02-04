@@ -14,12 +14,13 @@
 #' @param delimiter a character to delimite the columns of the text file with the coordinates
 #' @usage read_points(x,type, delimiter,id, lat, long)
 #' @examples
+#' \dontrun{
 #' points.file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
 #' p <- read_points(points.file,type="shp")
 #' plot(landscapeDecoupler::r)
 #' plot(p, add=TRUE)
 #' text(p, labels=p$id)
-
+#' }
 
 read_points <- function(x, type="txt", delimiter="\t", id="id",
                         lat="x", long="y"){

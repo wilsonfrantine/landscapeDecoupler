@@ -21,10 +21,12 @@ this function was designed to sequentially perform both decoupling strategies: s
 The functions can also runs in parallel using the "Future" API. Users must only set the parallelization extrategy with \code{\link[future:plan]{future::plan()}} and run the function.
 }
 \examples{
+\dontrun{
 r <- raster(system.file("extdata/raster.grd", package = "landscapeDecoupler"))
 p <- read_points(system.file("extdata/pnts.shp", package = "landscapeDecoupler"), type = "shp")
 b <- c(750,1500,3000)
 my.decoupled.landscape <- decouple(r,p,b)
+}
 }
 \seealso{
 \code{\link[=decouple.specific]{decouple.specific()}}, \code{\link[=nestedscales]{nestedscales()}}
