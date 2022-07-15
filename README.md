@@ -52,6 +52,6 @@ To get more help about paralellization strategies, you can do:
 
 ## Reporting bugs
 
-This is a prototype package. If you get any crash, please post here, or mail me.
+This is a prototype package. If you get any crash, please post here, or mail to wilsonfrantine@gmail.com .
 
 Have fun!
