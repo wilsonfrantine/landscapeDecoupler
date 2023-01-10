@@ -1,6 +1,6 @@
 # landscapeDecoupler
 
-An R package to help with landscape analisis
+An R package to help with landscape analisys
 
 ## How to install
 
