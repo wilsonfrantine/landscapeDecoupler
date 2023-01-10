@@ -1,22 +1,13 @@
 # landscapeDecoupler
 
-An R package to help with landscape decoupling
+An R package to help with landscape analisis
 
 ## How to install
 
-If you wanna a simple installation
-
 ```{r}
-library("devtools")
-install_github("wilsonfrantine/landscapeDecoupler")
+remotes::install_github("wilsonfrantine/landscapeDecoupler")
 ```
-
-If you also wanna vignettes locally
-
-```{r}
-library("devtools")
-install_github("wilsonfrantine/landscapeDecoupler", vignettes=TRUE)
-```
+> The dependency `broom.Extra` has been removed from CRAN and the package will fail to install. You can workarround by installing the last vertion through the archive <a href="https://cran.r-project.org/src/contrib/Archive/broomExtra/"> broomExtra archive <\a>.
 
 ## How to use it
 
@@ -28,7 +19,7 @@ How to use **multifit** or **Nested vs Decoupled** approaches, see <a href="http
 
 ## Paralellal computation
 
-Based on our tests so far, parallelization has not returned significatively faster runs. However, you might want to run some large dataset in parallel strategies. The package is prepared to parallelization with the **future's** framework. We've still working on that because we still having some overhead issues. Nonetheless, you might try it out on your own machine/cluster by using any strategy available on the **future's** framework. 
+Based on our tests so far, parallelization has not returned significatively faster runs. However, you might want to run some large dataset in parallel strategies. The package is ready to parallelization with the **future** framework. We're still working on due to some overhead issues. To run in parallel: 
 
 ```{r}
 library("landscapeDecoupler")
@@ -36,14 +27,13 @@ plan("multisession")
 
 #then run your code...
 ```
-To get back to the defaul you might either:
+To get back to the defaul you can either:
 
 ```{r}
 plan("default")
 #or
 plan("sequential")
 ```
-
 To get more help about paralellization strategies, you can do:
 
 ```{r}
