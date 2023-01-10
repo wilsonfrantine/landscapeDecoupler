@@ -7,7 +7,7 @@ An R package to help with landscape analisys
 ```{r}
 remotes::install_github("wilsonfrantine/landscapeDecoupler")
 ```
-> The dependency `broom.Extra` has been removed from CRAN and the package will fail to install. You can workarround by installing the last vertion through the archive <a href="https://cran.r-project.org/src/contrib/Archive/broomExtra/"> broomExtra archive <\a>.
+> The dependency `broom.Extra` has been removed from CRAN and the package will fail to install. You can workarround by installing the last vertion through the archive <a href="https://cran.r-project.org/src/contrib/Archive/broomExtra/"> broomExtra archive</a>.
 
 ## How to use it
 
