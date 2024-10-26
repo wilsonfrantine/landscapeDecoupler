@@ -1,10 +1,10 @@
 Package: landscapeDecoupler
 Type: Package
-Title: Landscape Decoupler
+Title: Landscape Decoupler: Tools for Multi-scale Landscape Analysis
 Version: 0.3.0
 Author: Wilson Frantine-Silva
 Maintainer: Wilson Frantine Silva <wilsonfrantine@gmail.com>
-Description: The package assembling a set of functions to access different multi-scale approaches in Landscape Ecology.
+Description: landscapeDecoupler provides a comprehensive set of tools to assess landscape metrics and decouple nested spatial patterns across multiple scales. The package is particularly suited for landscape ecologists, conservation scientists, and spatial data analysts working with large-scale raster datasets. It facilitates the evaluation of landscape heterogeneity, connectivity, and fragmentation through a multi-scale approach. Functions include metrics extraction, nested scales analysis, and visualization tools. Parallelization support is available using the 'future' framework, although performance gains vary depending on dataset size. Detailed vignettes are provided to guide users through practical examples.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true

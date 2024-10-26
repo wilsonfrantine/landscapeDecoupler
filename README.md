@@ -1,47 +1,81 @@
 # landscapeDecoupler
 
-An R package to help with landscape analisys
+`landscapeDecoupler` is an R package designed to perform multi-scale landscape analysis. It provides tools to decouple nested spatial patterns and assess landscape metrics, helping landscape ecologists and conservation scientists analyze spatial data efficiently.
 
-## How to install
+## Features
 
-```{r}
+- Tools for calculating landscape metrics across multiple scales.
+- Nested and decoupled approaches for landscape analysis.
+- Integration with `raster`, `sf`, and `landscapemetrics` for handling spatial and raster data.
+- Experimental support for parallel processing using the `future` package.
+
+## Installation
+
+You can install the development version of `landscapeDecoupler` from GitHub:
+
+```r
+# Install from GitHub
 remotes::install_github("wilsonfrantine/landscapeDecoupler")
 ```
-> The dependency `broom.Extra` has been removed from CRAN and the package will fail to install. You can workarround by installing the last vertion through the archive <a href="https://cran.r-project.org/src/contrib/Archive/broomExtra/"> broomExtra archive</a>.
 
-## How to use it
+## How to Use
 
-### Getting started
-For the first time, you might find helpful to follow <a href="https://wilsonfrantine.github.io/landscapeDecoupler/"> <b>this vignette. </b> </a>
+### Example
 
-### Multifiting / Nested vs Decoupled
-How to use **multifit** or **Nested vs Decoupled** approaches, see <a href="https://wilsonfrantine.github.io/landscapeDecoupler/Nested_vs_Decoupled.html"> <b> this vignette </b> </a>
+```r
+# Load the package
+library(landscapeDecoupler)
 
-## Paralellal computation
+# Load example data
+data(example_landscape)
 
-Based on our tests so far, parallelization has not returned significatively faster runs. However, you might want to run some large dataset in parallel strategies. The package is ready to parallelization with the **future** framework. We're still working on due to some overhead issues. To run in parallel: 
+# Calculate landscape metrics
+metrics <- calculate_metrics(example_landscape)
 
-```{r}
-library("landscapeDecoupler")
-plan("multisession")
-
-#then run your code...
-```
-To get back to the defaul you can either:
-
-```{r}
-plan("default")
-#or
-plan("sequential")
-```
-To get more help about paralellization strategies, you can do:
-
-```{r}
-?future::plan
+# Plot metrics
+plot(metrics)
 ```
 
-## Reporting bugs
+For detailed usage examples and tutorials, please check out our [vignettes](https://wilsonfrantine.github.io/landscapeDecoupler/).
 
-This is a prototype package. If you get any crash, please post here, or mail to wilsonfrantine@gmail.com .
+## Parallel Computation
 
-Have fun!
+The package offers support for parallel computation using the `future` package. To enable parallel processing, set up the plan as follows:
+
+```r
+library(future)
+plan(multisession)
+
+# Then run your code...
+metrics <- calculate_metrics(large_landscape)
+```
+
+To return to sequential processing, use:
+
+```r
+plan(sequential)
+```
+
+## How to Cite
+
+If you use the `landscapeDecoupler` package in your research, please cite it as follows:
+
+```
+Frantine-Silva, W. (2024). landscapeDecoupler: A package for multi-scale landscape analysis. R package version 0.3.0. https://doi.org/10.5281/zenodo.13997058
+```
+
+**BibTeX citation:**
+```bibtex
+@Manual{,
+  title = {landscapeDecoupler: A package for multi-scale landscape analysis},
+  author = {Wilson Frantine-Silva},
+  year = {2024},
+  note = {R package version 0.3.0},
+  doi = {10.5281/zenodo.13997058},
+  url = {https://doi.org/10.5281/zenodo.13997058}
+}
+```
+
+## Reporting Bugs
+
+This is a preview version. If you encounter any bugs or issues, please report them on the [GitHub issue tracker](https://github.com/wilsonfrantine/landscapeDecoupler/issues), or contact me at wilsonfrantine@gmail.com.
