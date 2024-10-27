@@ -20,21 +20,39 @@ remotes::install_github("wilsonfrantine/landscapeDecoupler")
 
 ## How to Use
 
+Four simple steps to analyze your data:
+1. Load the raster data, sampling points and set your buffer sizes
+2. Choose the best strategy for your experiment (coupled, decoupled, decouple_single)
+3. Calculate the metric for each scale with calculate_metrics() from any landscapemetrics package function
+
 ### Example
 
 ```r
 # Load the package
 library(landscapeDecoupler)
+library(raster)
+library(sf)
 
-# Load example data
-data(example_landscape)
+# Step 1: Load the data
+  # 1.1 Your raster
+  landscape_raster <- raster("path/to/your_raster")
+  
+  # 1.2 Your sampling points
+  path_to_shape_file <- system.file("extdata/pnts.shp", package="landscapeDecoupler")
+  points <- read_points(path_to_shape_file, type="shp")
+  
+  # Set your buffer sizes (ex. 100m, 500m, 1000m)
+  buffers <- c(100, 500, 1000)
 
-# Calculate landscape metrics
-metrics <- calculate_metrics(example_landscape)
+# Step 2: Choose your landscape strategy analysis (coupled_scales, decouple_scales, decouple_single_scale) 
+  scales <- decouple_scales(landscape_raster, points, buffers)
 
-# Plot metrics
-plot(metrics)
+# Step 3: Calculate landscape metrics on the decoupled scales
+  metrics <- calculate_metrics(scales)
+
 ```
+
+The package also have functions to plot the extracted scales for visual check and publication, as well as basic metric plots.
 
 For detailed usage examples and tutorials, please check out our [vignettes](https://wilsonfrantine.github.io/landscapeDecoupler/).
 
