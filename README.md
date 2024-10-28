@@ -1,21 +1,21 @@
-# landscapeDecoupler
+# lsma: Landscape Structure Multiscale Analysis
 
-`landscapeDecoupler` is an R package designed to perform multi-scale landscape analysis. It provides tools to decouple nested spatial patterns and assess landscape metrics, helping landscape ecologists and conservation scientists analyze spatial data efficiently.
+`lsma` is an R package designed to perform multi-scale landscape analysis. It provides tools to decouple nested spatial patterns and assess landscape metrics, helping landscape ecologists and conservation scientists analyze spatial data efficiently.
 
 ## Features
 
 - Tools for calculating landscape metrics across multiple scales.
 - Nested and decoupled approaches for landscape analysis.
-- Integration with `raster`, `sf`, and `landscapemetrics` for handling spatial and raster data.
+- Integration with `raster`, `sf`, and `lsma` for handling spatial and raster data.
 - Experimental support for parallel processing using the `future` package.
 
 ## Installation
 
-You can install the development version of `landscapeDecoupler` from GitHub:
+You can install the development version of `lsma` from GitHub:
 
 ```r
 # Install from GitHub
-remotes::install_github("wilsonfrantine/landscapeDecoupler")
+remotes::install_github("wilsonfrantine/lsma")
 ```
 
 ## How to Use
@@ -29,7 +29,7 @@ Four simple steps to analyze your data:
 
 ```r
 # Load the package
-library(landscapeDecoupler)
+library(lsma)
 library(raster)
 library(sf)
 
@@ -54,7 +54,7 @@ library(sf)
 
 The package also have functions to plot the extracted scales for visual check and publication, as well as basic metric plots.
 
-For detailed usage examples and tutorials, please check out our [vignettes](https://wilsonfrantine.github.io/landscapeDecoupler/).
+For detailed usage examples and tutorials, please check out our [vignettes](https://wilsonfrantine.github.io/lsma/).
 
 ## Parallel Computation
 
@@ -76,19 +76,19 @@ plan(sequential)
 
 ## How to Cite
 
-If you use the `landscapeDecoupler` package in your research, please cite it as follows:
+If you use the `lsma` package in your research, please cite it as follows:
 
 ```
-Frantine-Silva, W. (2024). landscapeDecoupler: A package for multi-scale landscape analysis. R package version 0.3.0. https://doi.org/10.5281/zenodo.13997058
+Frantine-Silva, W. (2024). lsma: A package for landscape structure multi-scale analysis. R package version 0.3.0. https://doi.org/10.5281/zenodo.13997058
 ```
 
 **BibTeX citation:**
 ```bibtex
 @Manual{,
-  title = {landscapeDecoupler: A package for multi-scale landscape analysis},
+  title = {lsma: A package for landscape structure multi-scale analysis},
   author = {Wilson Frantine-Silva},
   year = {2024},
-  note = {R package version 0.3.0},
+  note = {R package version 0.3.1},
   doi = {10.5281/zenodo.13997058},
   url = {https://doi.org/10.5281/zenodo.13997058}
 }
